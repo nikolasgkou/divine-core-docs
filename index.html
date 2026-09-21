@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Divine Core — a control plane for coding agents</title>
+<meta name="description" content="Divine Core is a control plane for Codex and Claude: recorded permissions, isolated workspaces, source-bound verification and OpenRewrite recipes.">
+<meta property="og:title" content="Divine Core">
+<meta property="og:description" content="A control plane for Codex and Claude with recorded permissions, isolated workspaces and source-bound verification.">
+<meta property="og:type" content="website">
+<meta name="author" content="Nikolas Gkoutzioulis">
+<link rel="canonical" href="https://nikolasgkou.github.io/divine-core-docs/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f7f5; --surface:#ffffff; --surface-2:#f1f1ee;
+  --ink:#16161a; --ink-2:#4a4a55; --ink-3:#77778a;
+  --line:#e3e3de; --line-2:#c4c4bc;
+  --accent:#b4471f; --accent-2:#6656d9; --accent-soft:#fbeee8;
+  --ok:#2f6d4f; --ok-soft:#e8f3ec;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --radius:14px; --maxw:940px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f0f11; --surface:#17171a; --surface-2:#1d1d21;
+    --ink:#ececf0; --ink-2:#b2b2be; --ink-3:#83838d;
+    --line:#292930; --line-2:#43434c;
+    --accent:#e8875c; --accent-2:#9d91ff; --accent-soft:#2a1a12;
+    --ok:#7fc79e; --ok-soft:#14231b;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f0f11; --surface:#17171a; --surface-2:#1d1d21;
+  --ink:#ececf0; --ink-2:#b2b2be; --ink-3:#83838d;
+  --line:#292930; --line-2:#43434c;
+  --accent:#e8875c; --accent-2:#9d91ff; --accent-soft:#2a1a12;
+  --ok:#7fc79e; --ok-soft:#14231b;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.62;overflow-x:hidden}
+body:before{content:"";position:absolute;inset:0 0 auto;height:720px;pointer-events:none;
+  background:radial-gradient(650px 340px at 18% 3%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 70%),
+  radial-gradient(620px 320px at 88% 7%,color-mix(in srgb,var(--accent-2) 12%,transparent),transparent 72%)}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 16px}
+a{color:var(--accent)}
+header.hero{padding:92px 0 46px;position:relative}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 16px}
+h1{font-size:clamp(48px,9vw,78px);line-height:.98;letter-spacing:-.055em;margin:0 0 22px;font-weight:700;max-width:850px}
+.gradient{background:linear-gradient(110deg,var(--ink) 8%,var(--accent) 52%,var(--accent-2));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:clamp(17px,2.6vw,20.5px);color:var(--ink-2);margin:0;max-width:46em}
+.lede strong{color:var(--ink);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;margin:38px 0 0}
+.stat{background:var(--surface);padding:15px 17px}
+.stat b{display:block;font-family:var(--mono);font-size:21px;font-weight:700;letter-spacing:-.02em}
+.stat span{font-size:12.5px;color:var(--ink-3)}
+.signal{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid var(--line);
+  background:color-mix(in srgb,var(--surface) 78%,transparent);border-radius:999px;font:11px var(--mono);color:var(--ink-2);margin-bottom:21px}
+.signal i{width:7px;height:7px;background:var(--ok);border-radius:50%;box-shadow:0 0 0 5px color-mix(in srgb,var(--ok) 15%,transparent)}
+.thesis{display:grid;grid-template-columns:1fr;gap:12px;margin-top:25px}
+@media(min-width:700px){.thesis{grid-template-columns:repeat(3,1fr)}}
+.thesis div{padding:15px 16px;border-left:2px solid var(--line-2);font-size:13px;color:var(--ink-2)}
+.thesis b{display:block;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:3px}
+section{padding:48px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(23px,4vw,31px);line-height:1.18;letter-spacing:-.02em;margin:0 0 6px;font-weight:650}
+.sub{color:var(--ink-3);font-size:13.5px;margin:0 0 26px;font-family:var(--mono)}
+p{margin:0 0 16px;color:var(--ink-2)}
+p strong{color:var(--ink);font-weight:600}
+code{font-family:var(--mono);font-size:.87em;background:var(--surface-2);border:1px solid var(--line);
+  padding:1px 5px;border-radius:5px;color:var(--ink);white-space:nowrap}
+.dwrap{overflow-x:auto;margin:0 0 26px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+svg.dg{display:block;width:100%;min-width:660px;height:auto}
+.dg rect.box{fill:var(--surface);stroke:var(--line-2);stroke-width:1}
+.dg rect.frame{fill:var(--surface-2);stroke:var(--line);stroke-width:1}
+.dg rect.gate{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1}
+.dg text{font-family:var(--mono);font-size:12px;fill:var(--ink)}
+.dg text.mut{font-size:11px;fill:var(--ink-3)}
+.dg text.lbl{font-size:10.5px;fill:var(--ink-3)}
+.dg text.acc{fill:var(--accent);font-size:11px}
+.dg path.arr,.dg line.arr{stroke:var(--line-2);stroke-width:1.4;fill:none}
+.dg marker path{fill:var(--line-2);stroke:none}
+.cards{display:grid;gap:14px}
+@media(min-width:680px){.cards.two{grid-template-columns:1fr 1fr}.cards.three{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.card:hover{transform:translateY(-2px);border-color:var(--line-2);box-shadow:0 14px 35px rgba(0,0,0,.06)}
+.card h3{margin:0 0 4px;font-size:16.5px;font-weight:650}
+.card .role{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.11em;
+  color:var(--ink-3);margin:0 0 9px}
+.card p{font-size:14.5px;margin:0 0 10px}
+.card p:last-child{margin-bottom:0}
+.card ul{margin:0;padding-left:17px}
+.card li{font-size:14px;color:var(--ink-2);margin-bottom:5px}
+ul.plain{margin:0 0 16px;padding-left:18px}
+ul.plain li{color:var(--ink-2);margin-bottom:8px}
+.grid2{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);
+  border-radius:var(--radius);overflow:hidden}
+@media(min-width:640px){.grid2{grid-template-columns:1fr 1fr}}
+.cell{background:var(--surface);padding:14px 16px}
+.cell b{font-family:var(--mono);font-size:12.5px;color:var(--accent);display:block;letter-spacing:.05em}
+.cell span{font-size:13.5px;color:var(--ink-2)}
+pre{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:16px;
+  overflow-x:auto;margin:0 0 20px;font-family:var(--mono);font-size:12.6px;line-height:1.7;color:var(--ink-2)}
+pre .c{color:var(--ink-3)} pre .k{color:var(--accent)} pre .g{color:var(--ok)}
+.stack{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px}
+.stack span{font-family:var(--mono);font-size:12px;padding:4px 9px;border-radius:7px;
+  background:var(--surface);border:1px solid var(--line);color:var(--ink-2)}
+footer{padding:36px 0 64px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13.5px}
+footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
+.toggle{position:fixed;top:14px;right:14px;z-index:9;background:var(--surface);color:var(--ink-3);
+  border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-family:var(--mono);
+  font-size:11.5px;cursor:pointer}
+.toggle:hover{color:var(--ink);border-color:var(--line-2)}
+.recipe-flow{display:grid;grid-template-columns:1fr;gap:10px;margin:24px 0}
+@media(min-width:720px){.recipe-flow{grid-template-columns:repeat(5,1fr)}}
+.recipe-step{position:relative;padding:16px 13px;background:var(--surface);border:1px solid var(--line);border-radius:12px;min-height:105px}
+.recipe-step b{font:600 11px var(--mono);color:var(--accent);letter-spacing:.08em}
+.recipe-step strong{display:block;margin:8px 0 3px;font-size:14px}.recipe-step span{font-size:12.5px;color:var(--ink-3)}
+.callout{border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));background:linear-gradient(135deg,var(--accent-soft),var(--surface));
+  border-radius:var(--radius);padding:22px;margin:24px 0}.callout p{margin:0;font-size:15px}
+@media(prefers-reduced-motion:no-preference){.signal i{animation:pulse 2.4s infinite}@keyframes pulse{50%{box-shadow:0 0 0 8px transparent}}}
+</style>
+</head>
+<body>
+<button class="toggle" id="t">theme</button>
+<div class="wrap">
+
+<header class="hero">
+  <div class="signal"><i></i> CODEX + CLAUDE · ONE CONTROL PLANE</div>
+  <p class="eyebrow">Agent infrastructure · Java · PostgreSQL · MCP</p>
+  <h1>Autonomy needs<br><span class="gradient">a control plane.</span></h1>
+  <p class="lede"><strong>Divine Core</strong> coordinates coding agents through recorded permissions, isolated workspaces and verification bound to the exact source that passed. Builders propose changes; the daemon decides whether their final candidate satisfies the frozen checks.</p>
+  <div class="thesis">
+    <div><b>Authority</b>Every launch records what the worker was allowed to do.</div>
+    <div><b>Isolation</b>Every task receives its own scoped Git worktree.</div>
+    <div><b>Evidence</b>Every builder pass is tied to one source fingerprint.</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>33</b><span>MCP tools</span></div>
+    <div class="stat"><b>3</b><span>worker roles</span></div>
+    <div class="stat"><b>~14k</b><span>lines of main code</span></div>
+    <div class="stat"><b>~15k</b><span>lines of tests</span></div>
+    <div class="stat"><b>94</b><span>test classes</span></div>
+    <div class="stat"><b>1</b><span>daemon, one JAR</span></div>
+  </div>
+</header>
+
+<section>
+  <h2>The premise</h2>
+  <p class="sub">a report written by the agent is not evidence about the agent</p>
+  <p>An agent that writes code also writes the summary of that code. It can run a suite, skip it, read a stale build, quietly relax a test, or simply state that everything is green — and all of those produce the same artefact: a confident paragraph.</p>
+  <p>Divine Core treats that paragraph as untrusted input. Permission is a recorded fact attached to a launch. For builder tasks, completion depends on checks the daemon runs against a disposable copy and binds to one exact source fingerprint. The interesting engineering is in the space between the agent and the merge button.</p>
+</section>
+
+<section>
+  <h2>System architecture</h2>
+  <p class="sub">one application · one source of truth · local-first</p>
+  <div class="dwrap">
+  <svg class="dg" viewBox="0 0 860 470" role="img" aria-label="Architecture: agent clients connect over MCP to the Divine Core daemon, which owns PostgreSQL state, launches tmux workers in isolated git worktrees, and runs verification in a disposable snapshot.">
+    <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <text class="mut" x="8" y="46">clients</text>
+    <rect class="box" x="150" y="18" width="250" height="46" rx="9"/>
+    <text x="275" y="45" text-anchor="middle">Claude Code · orchestrator</text>
+    <rect class="box" x="460" y="18" width="250" height="46" rx="9"/>
+    <text x="585" y="45" text-anchor="middle">Codex · orchestrator</text>
+    <line class="arr" x1="275" y1="64" x2="275" y2="106" marker-end="url(#a1)"/>
+    <line class="arr" x1="585" y1="64" x2="585" y2="106" marker-end="url(#a1)"/>
+    <text class="lbl" x="430" y="90" text-anchor="middle">MCP · Streamable HTTP · :8787</text>
+
+    <rect class="frame" x="110" y="110" width="560" height="152" rx="12"/>
+    <text class="mut" x="126" y="133">Divine Core daemon · Spring Boot · one JAR · systemd user service</text>
+    <rect class="box" x="126" y="146" width="170" height="40" rx="8"/><text x="211" y="171" text-anchor="middle">task · lifecycle</text>
+    <rect class="box" x="302" y="146" width="170" height="40" rx="8"/><text x="387" y="171" text-anchor="middle">launch · recovery</text>
+    <rect class="box" x="478" y="146" width="170" height="40" rx="8"/><text x="563" y="171" text-anchor="middle">workspace · scope</text>
+    <rect class="box" x="126" y="198" width="170" height="40" rx="8"/><text x="211" y="223" text-anchor="middle">verify · evidence</text>
+    <rect class="box" x="302" y="198" width="170" height="40" rx="8"/><text x="387" y="223" text-anchor="middle">spec · review</text>
+    <rect class="box" x="478" y="198" width="170" height="40" rx="8"/><text x="563" y="223" text-anchor="middle">policy · digest</text>
+
+    <rect class="box" x="700" y="150" width="145" height="84" rx="9"/>
+    <text x="772" y="184" text-anchor="middle">PostgreSQL</text>
+    <text class="mut" x="772" y="204" text-anchor="middle">Flyway · JPA</text>
+    <line class="arr" x1="672" y1="192" x2="696" y2="192" marker-end="url(#a1)"/>
+    <text class="lbl" x="684" y="176" text-anchor="middle">state</text>
+
+    <line class="arr" x1="390" y1="262" x2="390" y2="312" marker-end="url(#a1)"/>
+    <text class="lbl" x="402" y="292">launch with recorded policy</text>
+    <path class="arr" d="M600 262 V288 H772 V326" marker-end="url(#a1)"/>
+    <text class="lbl" x="612" y="282">copy + run frozen checks</text>
+
+    <rect class="frame" x="110" y="316" width="560" height="134" rx="12"/>
+    <text class="mut" x="126" y="339">tmux worker runtime · one session per task</text>
+    <rect class="box" x="126" y="352" width="170" height="42" rx="8"/><text x="211" y="378" text-anchor="middle">spec · read-only</text>
+    <rect class="box" x="302" y="352" width="170" height="42" rx="8"/><text x="387" y="378" text-anchor="middle">builder · scoped</text>
+    <rect class="box" x="478" y="352" width="170" height="42" rx="8"/><text x="563" y="378" text-anchor="middle">reviewer · read-only</text>
+    <rect class="box" x="126" y="402" width="522" height="34" rx="8"/>
+    <text class="mut" x="387" y="423" text-anchor="middle">isolated git worktree per task · allowed edit globs · protected paths</text>
+
+    <rect class="box" x="700" y="330" width="145" height="84" rx="9"/>
+    <text x="772" y="360" text-anchor="middle">disposable</text>
+    <text x="772" y="378" text-anchor="middle">snapshot</text>
+    <text class="mut" x="772" y="398" text-anchor="middle">candidate copy</text>
+  </svg>
+  </div>
+  <p>One Spring Boot application, one Maven module, one daemon. PostgreSQL owns task identity, launch rows, workspaces, frozen check contracts and measured evidence — not a set of competing registries and status files. Spring Events wake consumers in-process, but critical pending work is persisted in the same transaction as the state change that triggered it, because neither events nor a database alone make an external effect exactly-once.</p>
+  <p>MCP is the primary agent-facing interface, over Streamable HTTP, so more than one client can drive the same long-lived daemon. <strong>An MCP connection is not a task identity:</strong> a client can disconnect and reconnect without losing tasks or repeating a completed side effect.</p>
+</section>
+
+<section>
+  <h2>Three roles, one flow</h2>
+  <p class="sub">spec → decide → build → verify → review → integrate</p>
+  <div class="cards three">
+    <div class="card">
+      <p class="role">read-only</p>
+      <h3>spec</h3>
+      <p>Turns a request into acceptance criteria, sourced findings and explicit open questions — each with the worker's own recommendation and who must decide it.</p>
+      <p>The orchestrator answers every open question <em>before</em> a builder starts. A builder left to guess guesses what is easiest to test.</p>
+    </div>
+    <div class="card">
+      <p class="role">scoped write</p>
+      <h3>builder</h3>
+      <p>Implementation, refactoring and migrations inside its own git worktree and its own declared edit scope.</p>
+      <p>It asks the daemon to verify; it cannot verify itself, cannot change what will be checked, and cannot report success past a failed check.</p>
+    </div>
+    <div class="card">
+      <p class="role">read-only</p>
+      <h3>reviewer</h3>
+      <p>Answers a fixed checklist of the failures a green suite does not catch, with a verdict per topic and concrete findings behind every concern.</p>
+      <p>The checklist is part of the tool schema, so a topic cannot be silently left out.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Task lifecycle</h2>
+  <p class="sub">four states · one gate · failure never blocked</p>
+  <div class="dwrap">
+  <svg class="dg" viewBox="0 0 860 200" role="img" aria-label="Lifecycle: CREATED to CLAIMED by claim_task, then through an evidence gate to COMPLETED, or directly to FAILED which is never gated; an orchestrator can also complete a CREATED task with no worker.">
+    <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <rect class="box" x="30" y="86" width="140" height="48" rx="9"/><text x="100" y="115" text-anchor="middle">CREATED</text>
+    <rect class="box" x="290" y="86" width="140" height="48" rx="9"/><text x="360" y="115" text-anchor="middle">CLAIMED</text>
+    <rect class="gate" x="498" y="36" width="172" height="46" rx="9"/><text class="acc" x="584" y="64" text-anchor="middle">evidence + digest gate</text>
+    <rect class="box" x="700" y="36" width="140" height="46" rx="9"/><text x="770" y="64" text-anchor="middle">COMPLETED</text>
+    <rect class="box" x="700" y="138" width="140" height="46" rx="9"/><text x="770" y="166" text-anchor="middle">FAILED</text>
+    <line class="arr" x1="170" y1="110" x2="286" y2="110" marker-end="url(#a2)"/>
+    <text class="lbl" x="228" y="100" text-anchor="middle">claim_task</text>
+    <path class="arr" d="M430 100 C 462 100, 470 60, 494 59" marker-end="url(#a2)"/>
+    <text class="lbl" x="436" y="76">finish_task COMPLETED</text>
+    <line class="arr" x1="670" y1="59" x2="696" y2="59" marker-end="url(#a2)"/>
+    <path class="arr" d="M430 122 C 530 122, 600 160, 696 161" marker-end="url(#a2)"/>
+    <text class="lbl" x="520" y="150">finish_task FAILED · stop_task — never gated</text>
+    <path class="arr" d="M100 86 V20 H770 V32" marker-end="url(#a2)"/>
+    <text class="lbl" x="420" y="14" text-anchor="middle">complete_task · orchestrator closes a CREATED task with no worker</text>
+  </svg>
+  </div>
+  <p><code>finish_task</code> refuses <code>COMPLETED</code> from a spec worker with no spec, a reviewer with no review, and a builder whose verification does not match its final snapshot. The opposite direction is deliberately open: a blocked worker can always report <code>FAILED</code>, immediately and without evidence, because a worker that cannot say "I am stuck" will invent something that looks like progress.</p>
+</section>
+
+<section>
+  <h2>Verification the worker cannot author</h2>
+  <p class="sub">freeze before launch · run in a snapshot · bind the verdict to the source</p>
+  <div class="dwrap">
+  <svg class="dg" viewBox="0 0 860 196" role="img" aria-label="Verification flow: freeze checks before launch, fingerprint the candidate, copy to scratch, run the frozen argv, parse fresh JUnit XML, bind the verdict to the digest.">
+    <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <rect class="box" x="10" y="30" width="118" height="64" rx="9"/>
+    <text x="69" y="58" text-anchor="middle">freeze checks</text><text class="mut" x="69" y="76" text-anchor="middle">before launch</text>
+    <rect class="box" x="148" y="30" width="118" height="64" rx="9"/>
+    <text x="207" y="58" text-anchor="middle">fingerprint</text><text class="mut" x="207" y="76" text-anchor="middle">candidate</text>
+    <rect class="box" x="286" y="30" width="118" height="64" rx="9"/>
+    <text x="345" y="58" text-anchor="middle">copy to</text><text class="mut" x="345" y="76" text-anchor="middle">scratch</text>
+    <rect class="box" x="424" y="30" width="118" height="64" rx="9"/>
+    <text x="483" y="58" text-anchor="middle">run frozen</text><text class="mut" x="483" y="76" text-anchor="middle">argv</text>
+    <rect class="box" x="562" y="30" width="118" height="64" rx="9"/>
+    <text x="621" y="58" text-anchor="middle">parse fresh</text><text class="mut" x="621" y="76" text-anchor="middle">JUnit XML</text>
+    <rect class="box" x="700" y="30" width="118" height="64" rx="9"/>
+    <text x="759" y="58" text-anchor="middle">bind verdict</text><text class="mut" x="759" y="76" text-anchor="middle">to digest</text>
+    <line class="arr" x1="128" y1="62" x2="144" y2="62" marker-end="url(#a3)"/>
+    <line class="arr" x1="266" y1="62" x2="282" y2="62" marker-end="url(#a3)"/>
+    <line class="arr" x1="404" y1="62" x2="420" y2="62" marker-end="url(#a3)"/>
+    <line class="arr" x1="542" y1="62" x2="558" y2="62" marker-end="url(#a3)"/>
+    <line class="arr" x1="680" y1="62" x2="696" y2="62" marker-end="url(#a3)"/>
+    <rect class="gate" x="10" y="122" width="808" height="52" rx="10"/>
+    <text class="acc" x="414" y="145" text-anchor="middle">pass = exit 0 · zero failures · zero errors · every required report scope actually executed</text>
+    <text class="mut" x="414" y="163" text-anchor="middle">source or build inputs that move afterwards invalidate the pass — completion re-checks the digest</text>
+  </svg>
+  </div>
+  <ul class="plain">
+    <li><strong>Frozen before the process exists.</strong> Named checks — argv, timeout, which report globs must exist and must contain executed tests — are written once, before launch, and are immutable. A concurrent configure and default-freeze race is settled by an insert-if-absent, not by a merge that could replace the winner's contract.</li>
+    <li><strong>Run in a throwaway copy.</strong> The daemon fingerprints the candidate worktree, snapshots it, deletes any pre-existing reports <em>inside the copy</em>, and runs the frozen argv there. Deletion never touches a real checkout.</li>
+    <li><strong>Only reports that run produced.</strong> JUnit XML is parsed with DTD and external-entity resolution disabled, leaf suites only so parent totals cannot double-count, with a per-report size ceiling. A required scope that exists but executed nothing counts as missing; a skipped-only suite fails.</li>
+    <li><strong>Re-fingerprinted afterwards.</strong> If anything moved while the checks ran, a synthetic <code>snapshot-integrity</code> failure is appended and the result cannot pass.</li>
+    <li><strong>Serialised, not interleaved.</strong> A workspace lock and a per-repository run gate refuse a second concurrent verification cheaply rather than letting two runs share a tree.</li>
+    <li><strong>Output is not a place for secrets.</strong> Build stdout is discarded rather than persisted; what is stored is counts, report paths, exit code, duration and a diagnostic line.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Permission as a durable fact</h2>
+  <p class="sub">a validated, versioned artefact — not a sentence in a prompt</p>
+  <div class="dwrap">
+  <svg class="dg" viewBox="0 0 860 232" role="img" aria-label="Policy composition: registry, role definition and role prompt compose deterministically into one effective policy with a SHA-256 digest, recorded on an immutable launch row and turned into CLI tool flags.">
+    <defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <rect class="box" x="10" y="20" width="186" height="44" rx="9"/><text class="mut" x="103" y="47" text-anchor="middle">registry · owner, version</text>
+    <rect class="box" x="10" y="80" width="186" height="44" rx="9"/><text class="mut" x="103" y="107" text-anchor="middle">role.json · tools, denies</text>
+    <rect class="box" x="10" y="140" width="186" height="44" rx="9"/><text class="mut" x="103" y="167" text-anchor="middle">PROMPT.md · hashed</text>
+    <path class="arr" d="M196 42 C 220 42, 226 70, 244 72" marker-end="url(#a4)"/>
+    <line class="arr" x1="196" y1="102" x2="244" y2="102" marker-end="url(#a4)"/>
+    <path class="arr" d="M196 162 C 220 162, 226 134, 244 132" marker-end="url(#a4)"/>
+    <rect class="box" x="250" y="48" width="150" height="108" rx="9"/>
+    <text x="325" y="92" text-anchor="middle">compose</text>
+    <text class="mut" x="325" y="112" text-anchor="middle">deny-first</text>
+    <text class="mut" x="325" y="130" text-anchor="middle">deterministic</text>
+    <line class="arr" x1="400" y1="102" x2="446" y2="102" marker-end="url(#a4)"/>
+    <rect class="gate" x="450" y="48" width="180" height="108" rx="9"/>
+    <text class="acc" x="540" y="90" text-anchor="middle">effective policy</text>
+    <text class="acc" x="540" y="110" text-anchor="middle">+ SHA-256 digest</text>
+    <text class="mut" x="540" y="132" text-anchor="middle">immutable at launch</text>
+    <path class="arr" d="M630 82 C 656 82, 660 68, 676 68" marker-end="url(#a4)"/>
+    <path class="arr" d="M630 124 C 656 124, 660 158, 676 158" marker-end="url(#a4)"/>
+    <rect class="box" x="680" y="44" width="168" height="48" rx="9"/><text class="mut" x="764" y="73" text-anchor="middle">launch row · replayed</text>
+    <rect class="box" x="680" y="134" width="168" height="48" rx="9"/><text class="mut" x="764" y="163" text-anchor="middle">--tools / --disallowed</text>
+    <rect class="gate" x="10" y="190" width="838" height="34" rx="10"/>
+    <text class="acc" x="429" y="212" text-anchor="middle">recovery replays the recorded snapshot and re-verifies its digest — it never recomposes from files that may have changed</text>
+  </svg>
+  </div>
+  <div class="cards two">
+    <div class="card">
+      <h3>The catalog fails closed</h3>
+      <p>Roles live in a versioned registry: owner, scope, pinned policy schema, version, and the test that exercises it. The daemon loads and validates all of it at startup and <strong>refuses to boot</strong> on a malformed file, a duplicate, a registry/file disagreement, an unknown MCP profile, a rule that is both allowed and denied, or anything orphaned in either direction.</p>
+      <p>There is no implicit role and no default policy. An ambiguous conflict is rejected at load rather than resolved silently later.</p>
+    </div>
+    <div class="card">
+      <h3>Read-only role policy</h3>
+      <p>A role declared read-only is validated as such at load: it may not list an editing tool, and if it inherits a default tool set it must deny the editing tools by name. The policy is an enforced CLI/tool boundary; write-capable workers are not described as OS-sandboxed.</p>
+      <p>Each worker also receives its own filtered MCP config containing only its profile's servers. Secrets are passed as a <em>path</em> the launcher reads at exec time, so no token value reaches an argv, a process environment, or a log line.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>The review checklist</h2>
+  <p class="sub">eight questions a passing suite does not answer</p>
+  <p>A reviewer asked to "look for problems" reports the problems it happened to notice, and the ones it never thought to look for are indistinguishable from the ones that are not there. So the list is part of the schema, and every topic must be answered.</p>
+  <div class="grid2">
+    <div class="cell"><b>BOUNDS</b><span>Every loop, queue, retry and read has an upper bound, or a reason it cannot grow.</span></div>
+    <div class="cell"><b>TIMEOUTS</b><span>Anything that can block has a timeout. "It has never hung" is not a bound.</span></div>
+    <div class="cell"><b>RECURRING</b><span>Ticks, retries and reconcilers are idempotent and accumulate nothing.</span></div>
+    <div class="cell"><b>CONCURRENCY</b><span>Two identical calls at once: races, shared mutable state, and whether the second is cleanly refused.</span></div>
+    <div class="cell"><b>QUOTA</b><span>A worker that can loop is a worker that can spend. Is there a cap, and is refusal cheap?</span></div>
+    <div class="cell"><b>PARTIAL_FAILURE</b><span>What an exception halfway through leaves behind: half-written rows, held locks, temp directories.</span></div>
+    <div class="cell"><b>UNTRUSTED_INPUT</b><span>Where outside values end up — command line, query, path, log — including values the daemon itself stored earlier.</span></div>
+    <div class="cell"><b>TEST_INTEGRITY</b><span>Assertions that cannot fail, code special-cased to test inputs, behaviour bent to suit a test.</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Recipes with a chain of custody</h2>
+  <p class="sub">OpenRewrite · typed analysis · preview before mutation · verify after application</p>
+  <p>Divine gives agents access to <strong>OpenRewrite's open-source recipe ecosystem</strong> without turning a recipe into unchecked write authority. An agent can search the catalog, inspect the exact recipe and version, run analysis against its task snapshot, and request a preview. Search recipes answer questions such as “where is this method called?” or “why is this dependency present?” with source-attributed results. Transformation recipes produce a patch for inspection.</p>
+
+  <div class="recipe-flow">
+    <div class="recipe-step"><b>01 · DISCOVER</b><strong>Search recipes</strong><span>FindMethods, FindTypes, dependency insight, migrations and cleanup.</span></div>
+    <div class="recipe-step"><b>02 · PIN</b><strong>Describe exactly</strong><span>Resolve the recipe, version, typed options and runtime revision.</span></div>
+    <div class="recipe-step"><b>03 · SNAPSHOT</b><strong>Analyse a copy</strong><span>Run offline against the fingerprinted task source, with no network.</span></div>
+    <div class="recipe-step"><b>04 · PREVIEW</b><strong>Inspect the patch</strong><span>Keep diagnostics and data tables separate from source mutation.</span></div>
+    <div class="recipe-step"><b>05 · PROVE</b><strong>Apply, then verify</strong><span>Enforce task path scope and rerun the frozen candidate checks.</span></div>
+  </div>
+
+  <div class="callout"><p><strong>Semantic tooling becomes evidence, not authority.</strong> A successful recipe run does not declare the work complete. Preview application is rejected if its source snapshot is stale or if the patch escapes the task's allowed paths; the resulting candidate must still pass the same source-bound verification gate.</p></div>
+
+  <div class="cards two">
+    <div class="card">
+      <p class="role">code intelligence</p>
+      <h3>Questions across a codebase</h3>
+      <p>Recipes can trace method calls, type usage, annotations, imports, deprecated APIs and Maven dependency paths. Results remain attached to the source snapshot that produced them.</p>
+    </div>
+    <div class="card">
+      <p class="role">controlled transformation</p>
+      <h3>Mechanical change, human-readable patch</h3>
+      <p>API renames, import cleanup, static analysis fixes and Java migrations are previewed first. The patch enters the same scoped workspace and verification flow as agent-written code.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>The surface</h2>
+  <p class="sub">33 MCP tools · worker-facing tools denied to every other role</p>
+  <pre><span class="c"># what an orchestrating session actually drives</span>
+<span class="k">create_task</span>        <span class="c">// immutable instructions, explicit source repo</span>
+<span class="k">prepare_workspace</span>  <span class="c">// isolated worktree + allowed edit globs</span>
+<span class="k">configure_verification</span> <span class="c">// frozen named checks, timeouts, required scopes</span>
+<span class="k">start_task</span>(role)   <span class="c">// records policy + digest, THEN launches the worker</span>
+
+<span class="c"># what a worker can reach</span>
+<span class="k">claim_task</span> · <span class="k">verify_task</span> · <span class="k">submit_spec</span> | <span class="k">submit_review</span> · <span class="k">finish_task</span>
+
+<span class="c"># what the orchestrator reads back — evidence, not prose</span>
+<span class="k">get_verification</span> · <span class="k">get_spec</span> · <span class="k">get_review</span> · <span class="k">peek_task</span> · <span class="k">list_tasks</span>
+
+<span class="g">finish_task COMPLETED</span> requires the role's stored evidence
+<span class="g">                     </span> and a source digest that still matches</pre>
+  <p>Live workers are observable while they run: <code>peek_task</code> returns a snapshot and marks a worker <em>stuck</em> after a period of silence, <code>send_to_task</code> passes a message into a running session, <code>stop_task</code> ends one. A reconciler archives finished tmux sessions on a delay, leaving the transcript readable, and adopts or relaunches a launch that never confirmed a session.</p>
+</section>
+
+<section>
+  <h2>How it is built</h2>
+  <p class="sub">and how it is checked</p>
+  <div class="stack">
+    <span>Java 25</span><span>Spring Boot 4.1.1</span><span>Spring AI MCP</span><span>Streamable HTTP</span>
+    <span>PostgreSQL</span><span>Flyway</span><span>Spring Data JPA</span><span>Spring Events</span>
+    <span>tmux</span><span>git worktrees</span><span>ArchUnit</span><span>Testcontainers</span>
+    <span>Micrometer / Actuator</span><span>systemd user service</span>
+  </div>
+  <p>Package boundaries are enforced by ArchUnit rather than by convention. Persistence, migrations and MCP wiring are exercised against real PostgreSQL through Testcontainers. The tmux launcher, inspector and archiver are tested against a real scratch tmux server rather than a mock, because the failures worth catching there are the ones a mock agrees to pretend away.</p>
+  <div class="cards two">
+    <div class="card">
+      <h3>Design constraints, chosen deliberately</h3>
+      <ul>
+        <li>Single workstation, no external broker, no Redis, no Kubernetes.</li>
+        <li>Local-first control state: workspaces, policy records, evidence and local-model artifacts remain on the workstation. Codex and Claude use their configured inference providers.</li>
+        <li>One module until a boundary earns its own package — no layers added to satisfy a pattern.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>What the daemon does not claim</h3>
+      <ul>
+        <li>A tool policy is a recorded permission boundary and an audit trail; it is not an OS sandbox for write-capable workers.</li>
+        <li>Verification proves a suite ran and passed against a known tree — not that its assertions are worth making. That is why <code>TEST_INTEGRITY</code> is a reviewed topic, not a metric.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Lineage and direction</h2>
+  <p class="sub">where it came from, where it goes next</p>
+  <div class="cards three">
+    <div class="card">
+      <p class="role">before</p>
+      <h3>A Python control plane</h3>
+      <p>Runner hooks for more than one agent CLI, task admission, resource leases, durable handovers, recoverable configuration deployment, and read-only execution isolated with Bubblewrap under a read-only host filesystem. It proved the model and outgrew flat files as the source of truth.</p>
+    </div>
+    <div class="card">
+      <p class="role">now</p>
+      <h3>One daemon, one database</h3>
+      <p>Orchestration and state consolidated into a single Spring Boot service over PostgreSQL, exposed through MCP so any compliant client can drive it. Roles, policies, workspaces, contracts and evidence are rows — queryable, replayable, and durable across a restart.</p>
+    </div>
+    <div class="card">
+      <p class="role">next</p>
+      <h3>Local inference for bounded loops</h3>
+      <p>A profile-driven local model runtime runs alongside it, with preflight that refuses rather than silently substituting a different model. Wiring it into the core will move repetitive, bounded task loops onto local inference while retaining the same task scope and verification requirements.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><strong style="color:var(--ink-2)">Divine Core</strong> — designed and built by <a href="https://www.linkedin.com/in/nikolasgk/">Nikolas Gkoutzioulis</a>.</p>
+  <p>Agent infrastructure built and operated on a single workstation.</p>
+  <p>Counts on this page are taken from the working tree; nothing here is a benchmark or a vendor claim.</p>
+</footer>
+
+</div>
+<script>
+(function(){
+  var b=document.getElementById('t'),r=document.documentElement,s=null;
+  try{s=localStorage.getItem('dc-theme')}catch(e){}
+  if(s) r.setAttribute('data-theme',s);
+  b.addEventListener('click',function(){
+    var c=r.getAttribute('data-theme');
+    var dark=c?c==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var n=dark?'light':'dark';
+    r.setAttribute('data-theme',n);
+    try{localStorage.setItem('dc-theme',n)}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
