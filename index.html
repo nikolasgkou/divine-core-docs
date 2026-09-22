@@ -4,12 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Divine Core — a control plane for coding agents</title>
-<meta name="description" content="Divine Core is a control plane for Codex and Claude: recorded permissions, isolated workspaces, source-bound verification and OpenRewrite recipes.">
-<meta property="og:title" content="Divine Core">
-<meta property="og:description" content="A control plane for Codex and Claude with recorded permissions, isolated workspaces and source-bound verification.">
-<meta property="og:type" content="website">
+<meta name="description" content="Divine Core is a control plane for Codex and Claude: recorded permissions, isolated workspaces, source-bound verification and OpenRewrite recipes. It built itself.">
 <meta name="author" content="Nikolas Gkoutzioulis">
+<meta name="theme-color" content="#b4471f" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f0f11" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="Divine Core">
+<meta property="og:description" content="A control plane for Codex and Claude: recorded permissions, isolated workspaces, source-bound verification. It built itself.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nikolasgkou.github.io/divine-core-docs/">
+<meta property="og:image" content="https://nikolasgkou.github.io/divine-core-docs/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://nikolasgkou.github.io/divine-core-docs/og.png">
 <link rel="canonical" href="https://nikolasgkou.github.io/divine-core-docs/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -19,7 +28,7 @@
   --ink:#16161a; --ink-2:#4a4a55; --ink-3:#77778a;
   --line:#e3e3de; --line-2:#c4c4bc;
   --accent:#b4471f; --accent-2:#6656d9; --accent-soft:#fbeee8;
-  --ok:#2f6d4f; --ok-soft:#e8f3ec;
+  --ok:#2f6d4f; --ok-soft:#e8f3ec; --bad:#b03030;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
   --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
   --radius:14px; --maxw:940px;
@@ -30,7 +39,7 @@
     --ink:#ececf0; --ink-2:#b2b2be; --ink-3:#83838d;
     --line:#292930; --line-2:#43434c;
     --accent:#e8875c; --accent-2:#9d91ff; --accent-soft:#2a1a12;
-    --ok:#7fc79e; --ok-soft:#14231b;
+    --ok:#7fc79e; --ok-soft:#14231b; --bad:#e08585;
   }
 }
 :root[data-theme="dark"]{
@@ -38,20 +47,26 @@
   --ink:#ececf0; --ink-2:#b2b2be; --ink-3:#83838d;
   --line:#292930; --line-2:#43434c;
   --accent:#e8875c; --accent-2:#9d91ff; --accent-soft:#2a1a12;
-  --ok:#7fc79e; --ok-soft:#14231b;
+  --ok:#7fc79e; --ok-soft:#14231b; --bad:#e08585;
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
   font-size:16px;line-height:1.62;overflow-x:hidden}
-body:before{content:"";position:absolute;inset:0 0 auto;height:720px;pointer-events:none;
+body:before{content:"";position:absolute;inset:0 0 auto;height:760px;pointer-events:none;z-index:-1;
   background:radial-gradient(650px 340px at 18% 3%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 70%),
   radial-gradient(620px 320px at 88% 7%,color-mix(in srgb,var(--accent-2) 12%,transparent),transparent 72%)}
+::selection{background:color-mix(in srgb,var(--accent) 26%,transparent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+*{scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+::-webkit-scrollbar{height:9px;width:9px}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:99px}
+::-webkit-scrollbar-track{background:transparent}
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 16px}
 a{color:var(--accent)}
 header.hero{padding:92px 0 46px;position:relative}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--accent);margin:0 0 16px}
+  color:var(--accent);margin:0 0 18px}
 h1{font-size:clamp(48px,9vw,78px);line-height:.98;letter-spacing:-.055em;margin:0 0 22px;font-weight:700;max-width:850px}
 .gradient{background:linear-gradient(110deg,var(--ink) 8%,var(--accent) 52%,var(--accent-2));
   -webkit-background-clip:text;background-clip:text;color:transparent}
@@ -63,15 +78,14 @@ h1{font-size:clamp(48px,9vw,78px);line-height:.98;letter-spacing:-.055em;margin:
 .stat{background:var(--surface);padding:15px 17px}
 .stat b{display:block;font-family:var(--mono);font-size:21px;font-weight:700;letter-spacing:-.02em}
 .stat span{font-size:12.5px;color:var(--ink-3)}
-.signal{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid var(--line);
-  background:color-mix(in srgb,var(--surface) 78%,transparent);border-radius:999px;font:11px var(--mono);color:var(--ink-2);margin-bottom:21px}
-.signal i{width:7px;height:7px;background:var(--ok);border-radius:50%;box-shadow:0 0 0 5px color-mix(in srgb,var(--ok) 15%,transparent)}
 .thesis{display:grid;grid-template-columns:1fr;gap:12px;margin-top:25px}
 @media(min-width:700px){.thesis{grid-template-columns:repeat(3,1fr)}}
 .thesis div{padding:15px 16px;border-left:2px solid var(--line-2);font-size:13px;color:var(--ink-2)}
 .thesis b{display:block;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:3px}
-section{padding:48px 0;border-top:1px solid var(--line)}
-h2{font-size:clamp(23px,4vw,31px);line-height:1.18;letter-spacing:-.02em;margin:0 0 6px;font-weight:650}
+section{padding:52px 0;border-top:1px solid var(--line);position:relative}
+section[data-n]:before{content:attr(data-n);position:absolute;top:34px;right:0;font-family:var(--mono);
+  font-size:104px;font-weight:700;line-height:1;color:var(--ink);opacity:.035;pointer-events:none;letter-spacing:-.05em}
+h2{font-size:clamp(23px,4vw,31px);line-height:1.18;letter-spacing:-.02em;margin:0 0 6px;font-weight:650;position:relative}
 .sub{color:var(--ink-3);font-size:13.5px;margin:0 0 26px;font-family:var(--mono)}
 p{margin:0 0 16px;color:var(--ink-2)}
 p strong{color:var(--ink);font-weight:600}
@@ -88,10 +102,11 @@ svg.dg{display:block;width:100%;min-width:660px;height:auto}
 .dg text.acc{fill:var(--accent);font-size:11px}
 .dg path.arr,.dg line.arr{stroke:var(--line-2);stroke-width:1.4;fill:none}
 .dg marker path{fill:var(--line-2);stroke:none}
+.dg circle.pulse{fill:var(--accent)}
 .cards{display:grid;gap:14px}
 @media(min-width:680px){.cards.two{grid-template-columns:1fr 1fr}.cards.three{grid-template-columns:repeat(3,1fr)}}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
-.card{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
 .card:hover{transform:translateY(-2px);border-color:var(--line-2);box-shadow:0 14px 35px rgba(0,0,0,.06)}
 .card h3{margin:0 0 4px;font-size:16.5px;font-weight:650}
 .card .role{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.11em;
@@ -110,16 +125,10 @@ ul.plain li{color:var(--ink-2);margin-bottom:8px}
 .cell span{font-size:13.5px;color:var(--ink-2)}
 pre{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:16px;
   overflow-x:auto;margin:0 0 20px;font-family:var(--mono);font-size:12.6px;line-height:1.7;color:var(--ink-2)}
-pre .c{color:var(--ink-3)} pre .k{color:var(--accent)} pre .g{color:var(--ok)}
+pre .c{color:var(--ink-3)} pre .k{color:var(--accent)} pre .g{color:var(--ok)} pre .r{color:var(--bad)} pre .dim{color:var(--ink-3)}
 .stack{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px}
 .stack span{font-family:var(--mono);font-size:12px;padding:4px 9px;border-radius:7px;
   background:var(--surface);border:1px solid var(--line);color:var(--ink-2)}
-footer{padding:36px 0 64px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13.5px}
-footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
-.toggle{position:fixed;top:14px;right:14px;z-index:9;background:var(--surface);color:var(--ink-3);
-  border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-family:var(--mono);
-  font-size:11.5px;cursor:pointer}
-.toggle:hover{color:var(--ink);border-color:var(--line-2)}
 .recipe-flow{display:grid;grid-template-columns:1fr;gap:10px;margin:24px 0}
 @media(min-width:720px){.recipe-flow{grid-template-columns:repeat(5,1fr)}}
 .recipe-step{position:relative;padding:16px 13px;background:var(--surface);border:1px solid var(--line);border-radius:12px;min-height:105px}
@@ -127,15 +136,65 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
 .recipe-step strong{display:block;margin:8px 0 3px;font-size:14px}.recipe-step span{font-size:12.5px;color:var(--ink-3)}
 .callout{border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));background:linear-gradient(135deg,var(--accent-soft),var(--surface));
   border-radius:var(--radius);padding:22px;margin:24px 0}.callout p{margin:0;font-size:15px}
-@media(prefers-reduced-motion:no-preference){.signal i{animation:pulse 2.4s infinite}@keyframes pulse{50%{box-shadow:0 0 0 8px transparent}}}
+footer{padding:40px 0 70px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13.5px}
+footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
+.toggle{position:fixed;top:14px;right:14px;z-index:9;background:var(--surface);color:var(--ink-3);
+  border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-family:var(--mono);
+  font-size:11.5px;cursor:pointer}
+.toggle:hover{color:var(--ink);border-color:var(--line-2)}
+
+/* full-bleed band */
+.fullbleed{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
+  padding:52px calc(50vw - var(--maxw)/2 + 16px);background:var(--surface-2);border-block:1px solid var(--line)}
+@media(max-width:972px){.fullbleed{padding-left:16px;padding-right:16px}}
+
+/* run simulator */
+.sim{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden;margin:0 0 20px}
+.sim-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.sim-bar .dot{width:9px;height:9px;border-radius:50%;background:var(--line-2)}
+.sim-bar .name{font:11px var(--mono);color:var(--ink-3);letter-spacing:.06em;margin-right:auto}
+.sim-btn{font:11.5px var(--mono);padding:6px 11px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line-2);background:var(--surface);color:var(--ink-2)}
+.sim-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sim-btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.sim-states{display:flex;gap:6px;padding:14px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.sim-states i{font:11px var(--mono);font-style:normal;padding:5px 10px;border-radius:7px;border:1px solid var(--line);
+  color:var(--ink-3);background:var(--surface-2);transition:.25s}
+.sim-states i.on{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.sim-states i.good{color:var(--ok);border-color:var(--ok);background:var(--ok-soft)}
+.sim-states i.bad{color:var(--bad);border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}
+.sim-log{margin:0;padding:16px;min-height:268px;font:12.4px/1.72 var(--mono);color:var(--ink-2);
+  white-space:pre-wrap;word-break:break-word;background:var(--surface)}
+.sim-log b{color:var(--ink);font-weight:500}
+.sim-log .ok{color:var(--ok)}
+.sim-log .no{color:var(--bad)}
+.sim-log .dim{color:var(--ink-3)}
+
+/* section rail */
+.rail{display:none}
+@media(min-width:1290px){
+  .rail{display:block;position:fixed;top:50%;transform:translateY(-50%);left:calc(50% - 630px);width:150px;z-index:5}
+  .rail a{display:block;font:10.5px var(--mono);color:var(--ink-3);text-decoration:none;padding:3px 0 3px 14px;
+    border-left:1px solid var(--line);letter-spacing:.04em;transition:.2s}
+  .rail a:hover{color:var(--ink-2)}
+  .rail a.on{color:var(--accent);border-left-color:var(--accent)}
+}
+/* reveal */
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .55s ease,transform .55s ease}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .reveal{opacity:1;transform:none;transition:none}
+  .dg circle.pulse{display:none}
+}
 </style>
 </head>
 <body>
 <button class="toggle" id="t">theme</button>
+<nav class="rail" id="rail" aria-label="Sections"></nav>
 <div class="wrap">
 
 <header class="hero">
-  <div class="signal"><i></i> CODEX + CLAUDE · ONE CONTROL PLANE</div>
   <p class="eyebrow">Agent infrastructure · Java · PostgreSQL · MCP</p>
   <h1>Autonomy needs<br><span class="gradient">a control plane.</span></h1>
   <p class="lede"><strong>Divine Core</strong> coordinates coding agents through recorded permissions, isolated workspaces and verification bound to the exact source that passed. Builders propose changes; the daemon decides whether their final candidate satisfies the frozen checks.</p>
@@ -154,19 +213,58 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
   </div>
 </header>
 
-<section>
+<section id="premise" data-n="01">
   <h2>The premise</h2>
   <p class="sub">a report written by the agent is not evidence about the agent</p>
   <p>An agent that writes code also writes the summary of that code. It can run a suite, skip it, read a stale build, quietly relax a test, or simply state that everything is green — and all of those produce the same artefact: a confident paragraph.</p>
   <p>Divine Core treats that paragraph as untrusted input. Permission is a recorded fact attached to a launch. For builder tasks, completion depends on checks the daemon runs against a disposable copy and binds to one exact source fingerprint. The interesting engineering is in the space between the agent and the merge button.</p>
 </section>
 
-<section>
+<section id="refusal" data-n="02">
+  <h2>Watch it refuse</h2>
+  <p class="sub">the same task, twice — the second time the worker edits a file after verifying</p>
+  <div class="sim">
+    <div class="sim-bar">
+      <span class="dot"></span><span class="name">divine-core · task 99d6a33c · role=builder</span>
+      <button class="sim-btn" id="runA" aria-pressed="false">▸ honest run</button>
+      <button class="sim-btn" id="runB" aria-pressed="false">▸ tampered run</button>
+    </div>
+    <div class="sim-states" id="simStates">
+      <i data-s="created">CREATED</i><i data-s="claimed">CLAIMED</i><i data-s="verify">VERIFY</i><i data-s="finish">FINISH</i><i data-s="end">—</i>
+    </div>
+    <pre class="sim-log" id="simLog"><span class="dim">Both runs use the frozen checks and the real values from a task this project ran.</span></pre>
+  </div>
+  <p>Nothing in the second run is a lie the daemon has to detect by reading the worker's report. The report is irrelevant: the fingerprint taken at completion no longer matches the fingerprint the pass was bound to, so the pass does not apply to this tree any more.</p>
+</section>
+
+<section id="selfhosting" data-n="03">
+  <h2>It built itself</h2>
+  <p class="sub">the harness is its own first subject</p>
+  <p>Divine Core is written by agents running under Divine Core. The system that decides whether an agent's work is finished has been deciding that about its own source since its third day of existence. Every number below comes from the daemon's live PostgreSQL — not from a changelog.</p>
+  <div class="stats">
+    <div class="stat"><b>38</b><span>tasks · 34 completed, 4 failed</span></div>
+    <div class="stat"><b>27</b><span>worker launches</span></div>
+    <div class="stat"><b>27/27</b><span>with an enforced, recorded policy</span></div>
+    <div class="stat"><b>11</b><span>distinct policy digests</span></div>
+    <div class="stat"><b>574</b><span>executed tests on record</span></div>
+    <div class="stat"><b>88</b><span>commits, 82 agent co-authored</span></div>
+  </div>
+  <p style="margin-top:22px">Of those launches, <strong>16 were builders, 7 reviewers, 4 spec workers</strong>. The seven reviews produced <strong>56 checklist answers</strong> — seven reviews times eight topics, none skipped, because the schema does not allow a topic to be left out — along with 17 findings and 13 topics marked as a concern.</p>
+  <p>The repository went from empty to a self-hosting harness in about a week. That is not a claim about velocity; it is the reason the guardrails had to exist first. A system producing changes this fast is exactly the system you cannot afford to trust on its own account.</p>
+</section>
+
+<section id="architecture" data-n="04">
   <h2>System architecture</h2>
   <p class="sub">one application · one source of truth · local-first</p>
   <div class="dwrap">
   <svg class="dg" viewBox="0 0 860 470" role="img" aria-label="Architecture: agent clients connect over MCP to the Divine Core daemon, which owns PostgreSQL state, launches tmux workers in isolated git worktrees, and runs verification in a disposable snapshot.">
-    <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker></defs>
+    <defs>
+      <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker>
+      <path id="f1" d="M275 64 V104" fill="none"/>
+      <path id="f2" d="M585 64 V104" fill="none"/>
+      <path id="f3" d="M390 262 V310" fill="none"/>
+      <path id="f4" d="M600 262 V288 H772 V324" fill="none"/>
+    </defs>
     <text class="mut" x="8" y="46">clients</text>
     <rect class="box" x="150" y="18" width="250" height="46" rx="9"/>
     <text x="275" y="45" text-anchor="middle">Claude Code · orchestrator</text>
@@ -174,6 +272,8 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
     <text x="585" y="45" text-anchor="middle">Codex · orchestrator</text>
     <line class="arr" x1="275" y1="64" x2="275" y2="106" marker-end="url(#a1)"/>
     <line class="arr" x1="585" y1="64" x2="585" y2="106" marker-end="url(#a1)"/>
+    <circle class="pulse" r="3"><animateMotion dur="2.8s" repeatCount="indefinite"><mpath href="#f1"/></animateMotion></circle>
+    <circle class="pulse" r="3"><animateMotion dur="2.8s" begin="1.4s" repeatCount="indefinite"><mpath href="#f2"/></animateMotion></circle>
     <text class="lbl" x="430" y="90" text-anchor="middle">MCP · Streamable HTTP · :8787</text>
 
     <rect class="frame" x="110" y="110" width="560" height="152" rx="12"/>
@@ -192,8 +292,10 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
     <text class="lbl" x="684" y="176" text-anchor="middle">state</text>
 
     <line class="arr" x1="390" y1="262" x2="390" y2="312" marker-end="url(#a1)"/>
+    <circle class="pulse" r="3"><animateMotion dur="3.4s" begin="0.7s" repeatCount="indefinite"><mpath href="#f3"/></animateMotion></circle>
     <text class="lbl" x="402" y="292">launch with recorded policy</text>
     <path class="arr" d="M600 262 V288 H772 V326" marker-end="url(#a1)"/>
+    <circle class="pulse" r="3"><animateMotion dur="3.4s" begin="2.1s" repeatCount="indefinite"><mpath href="#f4"/></animateMotion></circle>
     <text class="lbl" x="612" y="282">copy + run frozen checks</text>
 
     <rect class="frame" x="110" y="316" width="560" height="134" rx="12"/>
@@ -214,8 +316,8 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
   <p>MCP is the primary agent-facing interface, over Streamable HTTP, so more than one client can drive the same long-lived daemon. <strong>An MCP connection is not a task identity:</strong> a client can disconnect and reconnect without losing tasks or repeating a completed side effect.</p>
 </section>
 
-<section>
-  <h2>Three roles, one flow</h2>
+<section id="roles" data-n="05">
+  <h2>Three roles and the surface they reach</h2>
   <p class="sub">spec → decide → build → verify → review → integrate</p>
   <div class="cards three">
     <div class="card">
@@ -237,9 +339,15 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
       <p>The checklist is part of the tool schema, so a topic cannot be silently left out.</p>
     </div>
   </div>
+  <pre style="margin-top:20px"><span class="c"># 33 MCP tools. Worker-facing tools are denied to every role but their own.</span>
+
+<span class="c">orchestrator</span>  <span class="k">create_task</span> · <span class="k">prepare_workspace</span> · <span class="k">configure_verification</span> · <span class="k">start_task</span>
+<span class="c">worker</span>        <span class="k">claim_task</span> · <span class="k">verify_task</span> · <span class="k">submit_spec</span> | <span class="k">submit_review</span> · <span class="k">finish_task</span>
+<span class="c">read back</span>     <span class="k">get_verification</span> · <span class="k">get_spec</span> · <span class="k">get_review</span> · <span class="k">peek_task</span> · <span class="k">list_tasks</span>
+<span class="c">live</span>          <span class="k">peek_task</span> marks a silent worker <b>stuck</b> · <span class="k">send_to_task</span> · <span class="k">stop_task</span></pre>
 </section>
 
-<section>
+<section id="lifecycle" data-n="06">
   <h2>Task lifecycle</h2>
   <p class="sub">four states · one gate · failure never blocked</p>
   <div class="dwrap">
@@ -253,10 +361,10 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
     <line class="arr" x1="170" y1="110" x2="286" y2="110" marker-end="url(#a2)"/>
     <text class="lbl" x="228" y="100" text-anchor="middle">claim_task</text>
     <path class="arr" d="M430 100 C 462 100, 470 60, 494 59" marker-end="url(#a2)"/>
-    <text class="lbl" x="436" y="76">finish_task COMPLETED</text>
+    <text class="lbl" x="430" y="46" text-anchor="end">finish_task COMPLETED</text>
     <line class="arr" x1="670" y1="59" x2="696" y2="59" marker-end="url(#a2)"/>
     <path class="arr" d="M430 122 C 530 122, 600 160, 696 161" marker-end="url(#a2)"/>
-    <text class="lbl" x="520" y="150">finish_task FAILED · stop_task — never gated</text>
+    <text class="lbl" x="444" y="172">finish_task FAILED · stop_task — never gated</text>
     <path class="arr" d="M100 86 V20 H770 V32" marker-end="url(#a2)"/>
     <text class="lbl" x="420" y="14" text-anchor="middle">complete_task · orchestrator closes a CREATED task with no worker</text>
   </svg>
@@ -264,7 +372,7 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
   <p><code>finish_task</code> refuses <code>COMPLETED</code> from a spec worker with no spec, a reviewer with no review, and a builder whose verification does not match its final snapshot. The opposite direction is deliberately open: a blocked worker can always report <code>FAILED</code>, immediately and without evidence, because a worker that cannot say "I am stuck" will invent something that looks like progress.</p>
 </section>
 
-<section>
+<section id="verification" data-n="07">
   <h2>Verification the worker cannot author</h2>
   <p class="sub">freeze before launch · run in a snapshot · bind the verdict to the source</p>
   <div class="dwrap">
@@ -289,7 +397,7 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
     <line class="arr" x1="680" y1="62" x2="696" y2="62" marker-end="url(#a3)"/>
     <rect class="gate" x="10" y="122" width="808" height="52" rx="10"/>
     <text class="acc" x="414" y="145" text-anchor="middle">pass = exit 0 · zero failures · zero errors · every required report scope actually executed</text>
-    <text class="mut" x="414" y="163" text-anchor="middle">source or build inputs that move afterwards invalidate the pass — completion re-checks the digest</text>
+    <text class="mut" x="414" y="163" text-anchor="middle">source or build inputs that move afterwards invalidate the pass — completion re-checks the fingerprint</text>
   </svg>
   </div>
   <ul class="plain">
@@ -302,7 +410,38 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
   </ul>
 </section>
 
-<section>
+<section id="realtask" data-n="08">
+  <h2>One real task, end to end</h2>
+  <p class="sub">task 99d6a33c · "Implement isolated OpenRewrite Maven execution backend"</p>
+  <p>Every value below is copied out of the daemon's database for a task this project actually ran — the scope it was given, the check that was frozen before it launched, and what the daemon measured afterwards.</p>
+  <pre><span class="c">// 1. the workspace it was bound to — allowed_paths, enforced before verify and at completion</span>
+[ <span class="k">"src/main/java/local/divine/core/moderne/OpenRewrite*.java"</span>,
+  <span class="k">"src/main/java/local/divine/core/moderne/ModerneProcess.java"</span>,
+  <span class="k">"src/test/java/local/divine/core/moderne/OpenRewrite*Test.java"</span>,
+  <span class="k">"src/test/java/local/divine/core/moderne/OpenRewrite*IT.java"</span>,
+  <span class="k">"docs/OPENREWRITE-MAVEN-BACKEND.md"</span> ]
+
+<span class="c">// 2. the check, frozen before the worker process existed</span>
+{ <span class="k">"name"</span>: "backend-unit-tests",
+  <span class="k">"argv"</span>: ["mvn","-o","-B","-ntp","-Dtest=OpenRewrite*Test","test"],
+  <span class="k">"timeoutSeconds"</span>: 600,
+  <span class="k">"requireTests"</span>: true,
+  <span class="k">"requiredReportGlobs"</span>: ["target/surefire-reports/TEST-...OpenRewrite*Test.xml"] }
+
+<span class="c">// 3. what the daemon measured, in a disposable copy</span>
+{ <span class="k">"name"</span>: "backend-unit-tests", <span class="g">"passed": true</span>, <span class="k">"exitCode"</span>: 0,
+  <span class="k">"tests"</span>: 20, <span class="k">"failures"</span>: 0, <span class="k">"errors"</span>: 0, <span class="k">"skipped"</span>: 0, <span class="k">"durationMs"</span>: 11752,
+  <span class="k">"diagnostic"</span>: "exit=0, missing required executed report scopes=[]",
+  <span class="k">"reportPaths"</span>: [ OpenRewriteCatalogTest.xml,
+                    OpenRewriteMavenBackendTest.xml,
+                    OpenRewriteSettingsTest.xml ] }
+
+<span class="c">// 4. the verdict, bound to one tree</span>
+<span class="g">"satisfied": true</span>   <span class="k">"tree_digest"</span>: <b>01e1aeef6dcd9171</b>…</pre>
+  <p>The interesting field is the last one. <code>satisfied</code> on its own is history — it records that a run once passed. What lets the task close is that the fingerprint taken at completion still equals <code>01e1aeef…</code>.</p>
+</section>
+
+<section id="policy" data-n="09">
   <h2>Permission as a durable fact</h2>
   <p class="sub">a validated, versioned artefact — not a sentence in a prompt</p>
   <div class="dwrap">
@@ -339,13 +478,14 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
     </div>
     <div class="card">
       <h3>Read-only role policy</h3>
-      <p>A role declared read-only is validated as such at load: it may not list an editing tool, and if it inherits a default tool set it must deny the editing tools by name. The policy is an enforced CLI/tool boundary; write-capable workers are not described as OS-sandboxed.</p>
+      <p>A role declared read-only is validated as such at load: it may not list an editing tool, and if it inherits a default tool set it must deny the editing tools by name.</p>
       <p>Each worker also receives its own filtered MCP config containing only its profile's servers. Secrets are passed as a <em>path</em> the launcher reads at exec time, so no token value reaches an argv, a process environment, or a log line.</p>
     </div>
   </div>
 </section>
 
-<section>
+<div class="fullbleed">
+<section id="checklist" data-n="10" style="border-top:none;padding-top:0">
   <h2>The review checklist</h2>
   <p class="sub">eight questions a passing suite does not answer</p>
   <p>A reviewer asked to "look for problems" reports the problems it happened to notice, and the ones it never thought to look for are indistinguishable from the ones that are not there. So the list is part of the schema, and every topic must be answered.</p>
@@ -359,9 +499,24 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
     <div class="cell"><b>UNTRUSTED_INPUT</b><span>Where outside values end up — command line, query, path, log — including values the daemon itself stored earlier.</span></div>
     <div class="cell"><b>TEST_INTEGRITY</b><span>Assertions that cannot fail, code special-cased to test inputs, behaviour bent to suit a test.</span></div>
   </div>
+  <p style="margin-top:22px">Here is one it actually caught, filed under <code>CONCURRENCY</code> against a change whose tests were entirely green:</p>
+  <pre><span class="k">summary</span>   Cross-job cache-key reuse lookup in runJob is unguarded
+          for backends without an installation lock
+<span class="k">file</span>      src/main/java/local/divine/core/moderne/ModerneService.java:244
+<span class="k">severity</span>  minor
+<span class="k">status</span>    <span class="dim">open · filed, not yet fixed</span>
+<span class="k">detail</span>    <span class="dim">Read + reasoned, not executed.</span> Before this delta the cached-success
+          lookup ran only while holding the installation FileLock. After the
+          refactor runJob() is invoked directly, with no lock, whenever
+          installationLockPath() is null — true for OpenRewriteMavenBackend.
+          Two threads with an identical cache_key can both miss the cached row
+          and both execute. No state is corrupted; the intended cross-task
+          cache reuse is silently dropped. Not a correctness bug, so minor.</pre>
+  <p>No test suite would have reported that, because nothing was broken — only quietly wasteful, and only under a race. It is still open, and it is on this page for the same reason it is in the database: a gap you have named costs less than one you have not. Note also what the reviewer says about itself — <em>read and reasoned, not executed</em>. A finding that states its own method is a finding you can weigh.</p>
 </section>
+</div>
 
-<section>
+<section id="recipes" data-n="11">
   <h2>Recipes with a chain of custody</h2>
   <p class="sub">OpenRewrite · typed analysis · preview before mutation · verify after application</p>
   <p>Divine gives agents access to <strong>OpenRewrite's open-source recipe ecosystem</strong> without turning a recipe into unchecked write authority. An agent can search the catalog, inspect the exact recipe and version, run analysis against its task snapshot, and request a preview. Search recipes answer questions such as “where is this method called?” or “why is this dependency present?” with source-attributed results. Transformation recipes produce a patch for inspection.</p>
@@ -375,6 +530,8 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
   </div>
 
   <div class="callout"><p><strong>Semantic tooling becomes evidence, not authority.</strong> A successful recipe run does not declare the work complete. Preview application is rejected if its source snapshot is stale or if the patch escapes the task's allowed paths; the resulting candidate must still pass the same source-bound verification gate.</p></div>
+
+  <p>The backend is <strong>disabled by default and inert until an operator provisions it</strong>: a pinned runtime revision, a checksum-verified executable, a local Maven repository, and execution in a network-isolated namespace with the build in offline mode. Reaching the open-source recipe ecosystem should not quietly become an outbound dependency at build time.</p>
 
   <div class="cards two">
     <div class="card">
@@ -390,27 +547,52 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
   </div>
 </section>
 
-<section>
-  <h2>The surface</h2>
-  <p class="sub">33 MCP tools · worker-facing tools denied to every other role</p>
-  <pre><span class="c"># what an orchestrating session actually drives</span>
-<span class="k">create_task</span>        <span class="c">// immutable instructions, explicit source repo</span>
-<span class="k">prepare_workspace</span>  <span class="c">// isolated worktree + allowed edit globs</span>
-<span class="k">configure_verification</span> <span class="c">// frozen named checks, timeouts, required scopes</span>
-<span class="k">start_task</span>(role)   <span class="c">// records policy + digest, THEN launches the worker</span>
-
-<span class="c"># what a worker can reach</span>
-<span class="k">claim_task</span> · <span class="k">verify_task</span> · <span class="k">submit_spec</span> | <span class="k">submit_review</span> · <span class="k">finish_task</span>
-
-<span class="c"># what the orchestrator reads back — evidence, not prose</span>
-<span class="k">get_verification</span> · <span class="k">get_spec</span> · <span class="k">get_review</span> · <span class="k">peek_task</span> · <span class="k">list_tasks</span>
-
-<span class="g">finish_task COMPLETED</span> requires the role's stored evidence
-<span class="g">                     </span> and a source digest that still matches</pre>
-  <p>Live workers are observable while they run: <code>peek_task</code> returns a snapshot and marks a worker <em>stuck</em> after a period of silence, <code>send_to_task</code> passes a message into a running session, <code>stop_task</code> ends one. A reconciler archives finished tmux sessions on a delay, leaving the transcript readable, and adopts or relaunches a launch that never confirmed a session.</p>
+<section id="operating" data-n="12">
+  <h2>Operating it</h2>
+  <p class="sub">three things that broke, and the failures it is built to survive</p>
+  <div class="cards three">
+    <div class="card">
+      <p class="role">01 · silence is expensive</p>
+      <h3>A client timeout burned real quota</h3>
+      <p>The MCP client gives up on a tool call after 60 seconds. The proof run took longer. The daemon finished it and recorded the result; the worker saw only <em>“the operation timed out”</em>, retried, and spent its run budget redoing work that was already done.</p>
+      <p>Fix: the client timeout is raised above the daemon's own, so the daemon's verdict — <strong>including <code>TIMED_OUT</code></strong> — is what reaches the worker, rather than silence.</p>
+    </div>
+    <div class="card">
+      <p class="role">02 · an empty list is a claim</p>
+      <h3><code>tools: []</code> means none, not default</h3>
+      <p>An empty allowlist is passed through verbatim: "only these, which is none". Reading it as "no preference, use the defaults" would silently hand a worker the full built-in tool set.</p>
+      <p>The distinction is now explicit in the launcher and asserted in tests, because a permissions bug that widens access looks exactly like a permissions bug that does nothing.</p>
+    </div>
+    <div class="card">
+      <p class="role">03 · the race before the race</p>
+      <h3>Why the contract is an insert, not a merge</h3>
+      <p>Freezing verification requirements used to go through an ordinary save. Two paths can reach it at once — an explicit configure and the default freeze at launch.</p>
+      <p>A merge would let the loser replace the winner's frozen requirements before anything had been measured against them. It is an insert-if-absent now: the first contract wins, and the second is refused.</p>
+    </div>
+  </div>
+  <div class="cards two" style="margin-top:14px">
+    <div class="card">
+      <h3>Failure modes it is designed for</h3>
+      <ul>
+        <li>Daemon restart: pending work is rediscovered from the database, not from memory.</li>
+        <li>A launch that never confirmed a session is adopted or relaunched, not orphaned.</li>
+        <li>Concurrent verification on one repository is refused with BUSY rather than interleaved.</li>
+        <li>Finished tmux sessions are archived on a delay, leaving the transcript readable.</li>
+        <li>A worker's task id is its session id, so its native transcript is findable from the task row alone.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Known gaps, stated as gaps</h3>
+      <ul>
+        <li>A CLAIMED task whose worker stopped responding has no automatic recovery: it is stopped and restarted by hand.</li>
+        <li>A tool policy is a recorded permission boundary and an audit trail; it is not an OS sandbox for write-capable workers.</li>
+        <li>Verification proves a suite ran and passed against a known tree — not that its assertions are worth making. That is why <code>TEST_INTEGRITY</code> is a reviewed topic, not a metric.</li>
+      </ul>
+    </div>
+  </div>
 </section>
 
-<section>
+<section id="built" data-n="13">
   <h2>How it is built</h2>
   <p class="sub">and how it is checked</p>
   <div class="stack">
@@ -430,46 +612,34 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
       </ul>
     </div>
     <div class="card">
-      <h3>What the daemon does not claim</h3>
+      <h3>Lineage and direction</h3>
       <ul>
-        <li>A tool policy is a recorded permission boundary and an audit trail; it is not an OS sandbox for write-capable workers.</li>
-        <li>Verification proves a suite ran and passed against a known tree — not that its assertions are worth making. That is why <code>TEST_INTEGRITY</code> is a reviewed topic, not a metric.</li>
+        <li><strong>Before:</strong> a Python control plane with runner hooks, task admission, resource leases, durable handovers and Bubblewrap-isolated read-only execution. It proved the model and outgrew flat files as the source of truth.</li>
+        <li><strong>Now:</strong> one Spring Boot service over PostgreSQL, driven through MCP by any compliant client.</li>
+        <li><strong>Next:</strong> a profile-driven local model runtime, whose preflight refuses rather than silently substituting a different model, wired in so bounded repetitive loops run locally under the same verification requirements.</li>
       </ul>
     </div>
   </div>
 </section>
 
-<section>
-  <h2>Lineage and direction</h2>
-  <p class="sub">where it came from, where it goes next</p>
-  <div class="cards three">
-    <div class="card">
-      <p class="role">before</p>
-      <h3>A Python control plane</h3>
-      <p>Runner hooks for more than one agent CLI, task admission, resource leases, durable handovers, recoverable configuration deployment, and read-only execution isolated with Bubblewrap under a read-only host filesystem. It proved the model and outgrew flat files as the source of truth.</p>
-    </div>
-    <div class="card">
-      <p class="role">now</p>
-      <h3>One daemon, one database</h3>
-      <p>Orchestration and state consolidated into a single Spring Boot service over PostgreSQL, exposed through MCP so any compliant client can drive it. Roles, policies, workspaces, contracts and evidence are rows — queryable, replayable, and durable across a restart.</p>
-    </div>
-    <div class="card">
-      <p class="role">next</p>
-      <h3>Local inference for bounded loops</h3>
-      <p>A profile-driven local model runtime runs alongside it, with preflight that refuses rather than silently substituting a different model. Wiring it into the core will move repetitive, bounded task loops onto local inference while retaining the same task scope and verification requirements.</p>
-    </div>
-  </div>
+<section id="why" data-n="14">
+  <h2>Why this exists</h2>
+  <p class="sub">the part that is not a mechanism</p>
+  <p>Most of the argument about coding agents is about how much they can write. That was never the constraint I ran into. The constraint is that an agent's output arrives with a confidence level it has not earned, at a rate no reviewer can absorb, and the reviewer who gives up first is the human.</p>
+  <p>So the thing worth building was not a better agent. It was the apparatus around one: somewhere the permissions are written down before the work starts, somewhere the work happens that is not your checkout, and something that measures the result and is willing to say no. <strong>Speed is only an asset if refusal is cheap.</strong></p>
+  <p>The rest of it — the digests, the frozen contracts, the eight questions — is just what that principle looks like once it has to survive contact with two agents running at once.</p>
 </section>
 
 <footer>
   <p><strong style="color:var(--ink-2)">Divine Core</strong> — designed and built by <a href="https://www.linkedin.com/in/nikolasgk/">Nikolas Gkoutzioulis</a>.</p>
-  <p>Agent infrastructure built and operated on a single workstation.</p>
-  <p>Counts on this page are taken from the working tree; nothing here is a benchmark or a vendor claim.</p>
+  <p>Agent infrastructure built and operated on a single workstation. Figures are read from the daemon's database and the working tree; nothing here is a benchmark or a vendor claim.</p>
+  <p>This page is one hand-written HTML file — no framework, no build step, and every word of it readable with JavaScript off.</p>
 </footer>
 
 </div>
 <script>
 (function(){
+  /* theme */
   var b=document.getElementById('t'),r=document.documentElement,s=null;
   try{s=localStorage.getItem('dc-theme')}catch(e){}
   if(s) r.setAttribute('data-theme',s);
@@ -480,6 +650,130 @@ footer p{color:var(--ink-3);font-size:13.5px;margin:0 0 6px}
     r.setAttribute('data-theme',n);
     try{localStorage.setItem('dc-theme',n)}catch(e){}
   });
+
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sections=[].slice.call(document.querySelectorAll('section[data-n]'));
+
+  /* rail */
+  var rail=document.getElementById('rail');
+  var titles={premise:'Premise',refusal:'Watch it refuse',selfhosting:'It built itself',architecture:'Architecture',
+    roles:'Roles & surface',lifecycle:'Lifecycle',verification:'Verification',realtask:'A real task',
+    policy:'Permission',checklist:'Review checklist',recipes:'Recipes',operating:'Operating it',built:'How it is built',why:'Why'};
+  sections.forEach(function(sec){
+    var a=document.createElement('a');
+    a.href='#'+sec.id; a.textContent=titles[sec.id]||sec.id; a.dataset.for=sec.id;
+    rail.appendChild(a);
+  });
+
+  /* reveal + rail active */
+  if('IntersectionObserver' in window){
+    if(!reduce){
+      sections.forEach(function(sec){
+        [].slice.call(sec.children).forEach(function(el,i){
+          el.classList.add('reveal');
+          el.style.transitionDelay=Math.min(i*55,330)+'ms';
+        });
+      });
+      var ro=new IntersectionObserver(function(es){
+        es.forEach(function(e){
+          if(e.isIntersecting){
+            [].slice.call(e.target.children).forEach(function(el){el.classList.add('in')});
+            ro.unobserve(e.target);
+          }
+        });
+      },{rootMargin:'0px 0px -12% 0px',threshold:.08});
+      sections.forEach(function(sec){ro.observe(sec)});
+    }
+    var ao=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        var link=rail.querySelector('a[data-for="'+e.target.id+'"]');
+        if(link&&e.isIntersecting){
+          [].slice.call(rail.children).forEach(function(l){l.classList.remove('on')});
+          link.classList.add('on');
+        }
+      });
+    },{rootMargin:'-45% 0px -45% 0px'});
+    sections.forEach(function(sec){ao.observe(sec)});
+  }
+
+  /* run simulator */
+  var LOG=document.getElementById('simLog'), STATES=document.getElementById('simStates');
+  var D='<span class="dim">', OK='<span class="ok">', NO='<span class="no">', E='</span>';
+  var common=[
+    [0,   '<b>$ prepare_workspace</b> task=99d6a33c',                 'created'],
+    [420, D+'  worktree .divine/ws/99d6a33c · scope: 5 globs'+E,      'created'],
+    [340, '<b>$ configure_verification</b>',                          'created'],
+    [420, D+'  frozen: backend-unit-tests'+E,                         'created'],
+    [180, D+'  mvn -o -B -ntp -Dtest=OpenRewrite*Test test'+E,        'created'],
+    [180, D+'  requires: executed tests &gt; 0 in TEST-…OpenRewrite*Test.xml'+E,'created'],
+    [380, '<b>$ start_task</b> role=builder',                         'created'],
+    [400, D+'  policy digest 7f3a9c…  tools enforced ✓'+E,            'claimed'],
+    [260, D+'  worker w-3f21 → tmux session · task claimed'+E,        'claimed'],
+    [600, D+'  … builder edits 4 files in scope'+E,                   'claimed'],
+    [700, '<b>$ verify_task</b>',                                     'verify'],
+    [420, D+'  fingerprint  '+E+'01e1aeef6dcd9171',                   'verify'],
+    [300, D+'  snapshot     → disposable copy'+E,                     'verify'],
+    [820, '  backend-unit-tests  tests=20 failures=0 errors=0 skipped=0  11.7s','verify'],
+    [420, D+'  re-fingerprint '+E+'01e1aeef6dcd9171'+D+'  unchanged ✓'+E,'verify']
+  ];
+  var honest=[
+    [520, OK+'  satisfied=true'+E+'  bound to 01e1aeef6dcd9171',      'verify'],
+    [620, '<b>$ finish_task</b> COMPLETED',                           'finish'],
+    [520, D+'  evidence present · fingerprint still 01e1aeef…'+E,     'finish'],
+    [400, OK+'  ✓ accepted → COMPLETED'+E,                            'good']
+  ];
+  var tampered=[
+    [520, OK+'  satisfied=true'+E+'  bound to 01e1aeef6dcd9171',      'verify'],
+    [700, D+'  … worker touches OpenRewriteMavenBackend.java after verifying'+E,'verify'],
+    [620, '<b>$ finish_task</b> COMPLETED',                           'finish'],
+    [520, D+'  worker report: "all checks pass, ready to merge"'+E,   'finish'],
+    [460, D+'  fingerprint now  '+E+'9c2e4b71a8f0d332',               'finish'],
+    [280, D+'  verified digest  '+E+'01e1aeef6dcd9171',               'finish'],
+    [420, NO+'  ✗ refused: source changed after verification'+E,      'bad'],
+    [320, D+'    task stays CLAIMED · re-verify the final tree'+E,    'bad']
+  ];
+  var timer=null;
+  function setState(k){
+    [].slice.call(STATES.children).forEach(function(i){i.className=''});
+    var order=['created','claimed','verify','finish'], idx=order.indexOf(k), j;
+    if(idx>-1){ for(j=0;j<=idx;j++) STATES.children[j].className='on'; STATES.children[4].textContent='—'; }
+    else{
+      for(j=0;j<4;j++) STATES.children[j].className='on';
+      STATES.children[4].className=(k==='good'?'good':'bad');
+      STATES.children[4].textContent=(k==='good'?'COMPLETED':'REFUSED');
+    }
+  }
+  function run(steps,btn){
+    clearTimeout(timer);
+    [].slice.call(document.querySelectorAll('.sim-btn')).forEach(function(x){x.setAttribute('aria-pressed','false')});
+    btn.setAttribute('aria-pressed','true');
+    LOG.innerHTML=''; setState('created');
+    var all=common.concat(steps), i=0;
+    if(reduce){
+      LOG.innerHTML=all.map(function(s){return s[1]}).join('\n');
+      setState(all[all.length-1][2]); return;
+    }
+    (function next(){
+      if(i>=all.length){ return; }
+      var step=all[i++];
+      timer=setTimeout(function(){
+        LOG.innerHTML+=(LOG.innerHTML?'\n':'')+step[1];
+        setState(step[2]);
+        LOG.scrollTop=LOG.scrollHeight;
+        next();
+      },step[0]);
+    })();
+  }
+  var bA=document.getElementById('runA'), bB=document.getElementById('runB');
+  bA.addEventListener('click',function(){run(honest,this)});
+  bB.addEventListener('click',function(){run(tampered,this)});
+  /* play the honest run once, when the panel is first seen */
+  if('IntersectionObserver' in window){
+    var so=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ so.disconnect(); run(honest,bA); } });
+    },{threshold:.35});
+    so.observe(document.getElementById('refusal'));
+  }
 })();
 </script>
 </body>
