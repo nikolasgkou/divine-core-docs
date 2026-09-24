@@ -1,78 +1,47 @@
-# Validation record — 24 September 2026
+# Evaluation record — 24 September 2026
 
-## What the recorded demonstration actually ran
+This technical companion records the author’s evaluation method, reported results and implementation boundaries. It is intended to be read without access to the private application. The observations are not an independent external assessment.
 
-The published replay is backed by `demo-receipt.json`, captured at
-2026-09-24T09:24:14Z. It is a deterministic integration demonstration against an
-isolated Spring Boot application and disposable cached PostgreSQL container.
-The worker launch metadata is fixture setup; no LLM or tmux worker is launched.
-The HTTP authorization, Maven/JUnit executions, verification journal and
-completion gates are real application code. Verifier outcomes are never seeded.
+## Reported observations
 
-1. A real source annotation resolves to the authored claim and plan step.
-2. A frozen offline Maven check executes three JUnit tests and passes.
-3. Editing `checked && unchanged` to `checked || unchanged` changes the source
-   fingerprint. The real MCP `finish_task` call refuses stale verification,
-   leaving the task CLAIMED.
-4. The same frozen check executes again: three tests, two failures, no errors.
-5. Repairing the expression and re-running produces three passing tests.
-6. A real worker credential receives HTTP 403 when querying a foreign task.
-7. The corrected task completes through MCP and its plan step records completion.
-8. All three verifier executions remain in the journal.
+The captured scenario used an isolated Spring Boot application and disposable PostgreSQL database. Worker launch metadata was fixture setup; no LLM or tmux worker was launched. HTTP authorization, Maven/JUnit checks, verification history and completion gates used real application code. Verifier outcomes were not seeded.
 
-The scenario body took 10.7 seconds on this workstation, excluding application
-and database startup. This is one observation, not a performance benchmark.
-The harness asserted the exact inner test and failure counts before exporting
-the receipt. Export occurs only after all scenario assertions pass.
+1. A source annotation resolved to its authored claim and covering plan step.
+2. A frozen Maven check executed three JUnit tests and passed.
+3. A source change invalidated the prior evidence. The real MCP completion request was refused, leaving the task CLAIMED.
+4. The same check then executed three tests with two failures and no errors.
+5. Repair and re-verification produced three passing tests.
+6. A worker credential received HTTP 403 when querying a foreign task.
+7. The repaired task and its plan step recorded completion.
+8. All three verifier executions remained in the journal.
 
-Core source fingerprint used by this run:
-`0eb78adff250139f245218977c913d4b6e89c2df4118ad9ab77d486993414d2f`.
-The demo harness was compiled separately into test build artifacts; it is not
-part of that core fingerprint. Its source is retained in the local interview
-bundle, with a checksum in the bundle manifest. This run is not a managed
-integration READY receipt or a production release approval.
+## Method and provenance
 
-## Semantic integration is still incomplete
+The record was captured at 2026-09-24T09:24:14Z. Assertions checked exact executed-test and failure counts before exporting the results. The scenario body took 10.7 seconds, excluding application and database startup; this is not a performance benchmark.
 
-The symbol query returns structural context but currently supplies no trusted
-verifier adapter. Its evidence status remains `UNVERIFIED` throughout this run.
-The replay's large status badges describe the **verifier gate state**, while the
-semantic status is shown separately in each stage. The HISTORICAL label describes
-the observed changed fingerprint plus refusal, not a current semantic API result.
+The application snapshot included uncommitted work. Its source fingerprint identifies that evaluation snapshot, rather than a clean tagged release. The fixture was compiled separately. Source identities and execution IDs link the recorded observations within the author’s environment; they do not substitute for independent access or review.
 
-A separate strict end-to-end test requiring `CURRENT_PASS` from the semantic
-query failed at that assertion, as expected from the missing adapter. This failure
-is not counted as a pass and is not hidden by the baseline demonstration.
+This scenario evaluates the task verification and completion path. It is not a separately verified integration candidate or a production release approval.
 
-The planned adapter must bind persisted plan revisions, task/step relationships,
-exact frozen checks and source fingerprints to immutable verifier executions.
-General test-suite success must not automatically become claim evidence.
+## Structural context and measured evidence
 
-## Other implementation boundaries
+The symbol query returns linked structural context. Its evidence status remains UNVERIFIED throughout the run because this version does not project trusted verifier executions into that query.
 
-1. Worktrees separate candidate source; they do not isolate hostile OS processes.
-2. The local operating-system user and daemon are trusted. Recorded evidence is
-   not an externally tamper-proof audit store.
-3. Tests establish their assertions for measured inputs, not arbitrary prose
-   truth, complete security or clinical safety.
-4. Java semantic extraction currently parses syntax/Javadoc without full type
-   attribution. Raw IDE/LSP hover is not automatically enriched.
-5. The current pair/plan admission path still hardcodes three seats despite the
-   separately configured general launch limit. Fixing that inconsistency is pending.
-6. Cloud isolation, protected CI promotion, compliance-control mapping and
-   operational retention are production extensions, not capabilities certified
-   by this demonstration.
+The replay’s status badges describe the separate verifier gate. HISTORICAL represents the changed source fingerprint and observed completion refusal; it is not the semantic API’s returned status. A separate strict test requiring CURRENT_PASS from that API failed at that assertion and is not counted among the passing observations.
 
-## Prior repository verification
+## Operating boundaries
 
-The earlier semantic enablement record reports 779 unit tests (two skipped) and
-19 selected integration tests with no remaining failures after its documented
-correction. Those are historical results for that milestone; they are not
-presented as a fresh full-suite run for this interview bundle.
+1. Worktrees separate source candidates; they do not isolate hostile OS processes.
+2. The local OS user and daemon are trusted. The database is not an external tamper-proof audit authority.
+3. Tests establish the declared assertions for measured inputs, not arbitrary prose truth or complete security.
+4. Java context extraction parses syntax and Javadoc without full type attribution. It does not automatically enrich raw IDE/LSP hover.
+5. The reviewed pair/plan admission path uses a three-seat limit distinct from the general configured launch limit. Nonterminal stale launches require explicit recovery.
+6. The recorded experiment does not evaluate cloud isolation, organizational release controls or compliance.
 
-## Presentation verification
+## Historical verification context
 
-The HTML uses local CSS, JavaScript and inline SVG, with no remote font or script
-dependencies. Browser checks cover desktop/mobile layout, stage selection,
-presenter mode and JavaScript errors. A recorded replay remains clearly labeled
-and never calls a live daemon from the public website.
+An earlier repository milestone reported 779 unit tests, two skipped, and 19 selected integration tests without remaining failures after its documented correction. These are historical counts, not a fresh full-suite result for this publication.
+
+## Reading the interactive presentation
+
+The replay displays a saved sequence and makes no calls to a live daemon. Its recorded data is retained with the publication. Architecture and operational sections describe implementation mechanisms; only the observations listed above are attributed to this experiment.

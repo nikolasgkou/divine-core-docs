@@ -1,24 +1,11 @@
-# Divine Core — project page
+# Divine Core — technical overview
 
-Source for <https://nikolasgkou.github.io/divine-core-docs/>.
+A self-contained engineering publication at https://nikolasgkou.github.io/divine-core-docs/.
 
-A single-page technical overview of **Divine Core**: a local control plane for
-Claude and Codex with recorded role policy, scoped worktrees, source-bound
-verification and source-linked documentation.
+The overview explains the control-plane architecture and presents the author’s recorded evaluation of HTTP authorization, source-bound verification and completion refusal. Readers need no source access or local test environment.
 
-The page includes authority and knowledge-flow diagrams and a recorded replay
-of real HTTP authorization, Maven/JUnit verification and completion refusal.
-`demo-receipt.json` contains sanitized observations and source fingerprints.
-`VALIDATION.md` separates that evidence from missing semantic-adapter integration
-and production boundaries. `DEMO.md` describes local reproduction in the private
-implementation/bundle. The demonstration uses a deterministic worker fixture;
-it does not launch an LLM or claim that a live daemon runs behind this website.
+`DEMO.html` / `DEMO.md` describe the evaluation question, setup, observations and interpretation. `VALIDATION.html` / `VALIDATION.md` document provenance and limitations. `demo-receipt.json` retains the sanitized captured data used by the replay. The application itself is private and is not distributed here.
 
-No framework, remote fonts, analytics or runtime network dependencies. The main
-page includes inline styles, diagrams and replay data; it also works offline.
-Supporting HTML/Markdown explains validation and reproduction. Publishing uses
-GitHub Pages from the root of the main branch.
+The replay is recorded, not a live service or independent external assessment. Operational and architectural descriptions remain distinct from the measured observations.
 
-Do not publish private rehearsal notes, credentials, raw session transcripts,
-database dumps or internal logs. Do not label worktrees as an OS sandbox or
-integration readiness as production-release approval.
+Static HTML, CSS, JavaScript and SVG; no framework, remote fonts, analytics or daemon calls. Published independently through GitHub Pages from main at the repository root.
