@@ -1,0 +1,104 @@
+{
+  "schema": "divine.interview-demo/v1",
+  "verified": true,
+  "semanticEvidenceIntegrated": false,
+  "capturedAt": "2026-09-24T09:24:14.092197536Z",
+  "durationMs": 10687,
+  "runtime": "isolated Spring Boot application and disposable PostgreSQL; no LLM process",
+  "fixture": "synthetic Java promotion policy; launch metadata seeded as a fixture; verifier results never seeded",
+  "sourceDigest": "0eb78adff250139f245218977c913d4b6e89c2df4118ad9ab77d486993414d2f",
+  "planDigest": "aed4d0c01ea4ab18646f4acd0b7f23e533915b11332240c7659b76ef278eab02",
+  "stages": [
+    {
+      "label": "Link the intent",
+      "semanticStatus": "UNVERIFIED",
+      "status": "UNVERIFIED",
+      "title": "A link is the beginning.",
+      "description": "The real symbol resolves to its claim, rationale and frozen plan step. No verifier execution exists yet.",
+      "snapshot": "853b4612fba7516a54f823be937238e6616e68c488f298971e75ec788a26cb2b",
+      "execution": "None",
+      "checks": "No execution yet"
+    },
+    {
+      "label": "Run the checks",
+      "semanticStatus": "UNVERIFIED",
+      "status": "CURRENT_PASS",
+      "title": "A pass belongs to this source.",
+      "description": "The daemon ran the frozen offline Maven check in a disposable snapshot. Three JUnit tests exercised the policy.",
+      "snapshot": "853b4612fba7516a54f823be937238e6616e68c488f298971e75ec788a26cb2b",
+      "execution": "0d45c179-2edc-46c1-9ba3-07a671ab564f",
+      "checks": "policy/policy-tests: 3 tests, 0 failures"
+    },
+    {
+      "label": "Change the source",
+      "semanticStatus": "UNVERIFIED",
+      "status": "HISTORICAL",
+      "title": "The completion gate refuses.",
+      "description": "A deterministic edit changes AND to OR. The earlier pass remains historical, and the real finish_task call rejects completion.",
+      "snapshot": "c7279c8b410f7bc4a71844b253feefba940b9481b64083515aa557c5f758f578",
+      "execution": "0d45c179-2edc-46c1-9ba3-07a671ab564f",
+      "checks": "Previous checks belong to the prior fingerprint",
+      "refusal": "Work changed after verification; run verify_task again"
+    },
+    {
+      "label": "Observe a failure",
+      "semanticStatus": "UNVERIFIED",
+      "status": "FAILED",
+      "title": "The changed behavior fails its tests.",
+      "description": "The daemon reruns the same frozen check. The OR implementation allows promotion without both conditions; the JUnit regression tests fail.",
+      "snapshot": "c7279c8b410f7bc4a71844b253feefba940b9481b64083515aa557c5f758f578",
+      "execution": "a44b560d-fc12-4d83-928c-497bcad74f07",
+      "checks": "policy/policy-tests: 3 tests, 2 failures"
+    },
+    {
+      "label": "Repair and reverify",
+      "semanticStatus": "UNVERIFIED",
+      "status": "CURRENT_PASS",
+      "title": "A new candidate earns new evidence.",
+      "description": "The corrected candidate passes the unchanged checks. A new execution supports this source; the previous success and failure remain in the journal.",
+      "snapshot": "8de7788b7b998de58e0afa2d5164ddbc4087d5086a607ccc9397d83a2fa9ad79",
+      "execution": "28173a8d-d3ee-47bc-9beb-2c8edcde9012",
+      "checks": "policy/policy-tests: 3 tests, 0 failures"
+    }
+  ],
+  "observations": [
+    {
+      "passed": true,
+      "name": "structural link is not proof"
+    },
+    {
+      "passed": true,
+      "name": "real verifier passes; semantic projection remains UNVERIFIED"
+    },
+    {
+      "passed": true,
+      "name": "changed source invalidates current proof"
+    },
+    {
+      "passed": true,
+      "name": "MCP finish_task refuses stale evidence"
+    },
+    {
+      "passed": true,
+      "name": "real verifier fails; semantic projection remains UNVERIFIED"
+    },
+    {
+      "passed": true,
+      "name": "repair requires fresh successful verification"
+    },
+    {
+      "passed": true,
+      "name": "real worker credential rejects foreign task with HTTP 403"
+    },
+    {
+      "passed": true,
+      "name": "successful completion and plan evidence retain all 3 attempts"
+    }
+  ],
+  "authorization": {
+    "foreignTaskHttpStatus": 403
+  },
+  "journalExecutions": 3,
+  "duration": "10.7s",
+  "observationCount": 8
+}
