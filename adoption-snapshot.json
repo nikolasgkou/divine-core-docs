@@ -11,7 +11,7 @@
     "sha256": "6951f19817ceec0ebfe659d707edf1d9880866b3eb725f5f7b987256a552ea0a",
     "inventoryDriftCount": 0
   },
-  "sharedDaemonActivated": false,
+  "sharedDaemonActivated": true,
   "sources": [
     {
       "path": "src/main/resources/knowledge/documentation-inventory.json",
@@ -237,12 +237,111 @@
         "reportSha256": "950ecdaf981f61cc57b81f31cefee37b320374d2d5ac10e7ae54b2970440c503"
       }
     ],
-    "scope": "Retained integration reports from earlier candidate executions, previously published at website commit 96476d5. These mixed-run reports do not establish a rerun against the latest source. No combined run total or managed verification receipt is inferred."
+    "scope": "Retained integration reports from earlier candidate executions, previously published at website commit 96476d5. These mixed-run reports do not establish a rerun against the latest source. No combined run total or managed verification receipt is inferred.",
+    "finalSourceIntegration": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sourceCommit": "3e735040b0981162d8e544b5700bde159494b2a4",
+      "mode": "ORDINARY_DIRECT_FAILSAFE",
+      "jarSha256": "106a6e2a1cdfb7a6be83bec9d167263951287546db46e556c8e1e3dc8d4bd70a",
+      "suites": [
+        {
+          "name": "PlanPersistenceIT",
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "sha256": "d6c29ddddd1c5025c105f60372e153e4f9f7bcedb698193686d4f8b1cc72a2e7"
+        },
+        {
+          "name": "PlanAdmissionIT",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "sha256": "43b9b1411480bbd5ad2e2abe6e018b0c59247ce8668360c35ebaf1a7522db711"
+        },
+        {
+          "name": "RepositoryAdoptionIT",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "sha256": "59780ac145ec52488838263f84bee591eef9799fbec856aba35f0a0f7210d61e"
+        }
+      ],
+      "recordSha256": "088b5b00bdb7d228613c17da194b97ed479462ebb553f8c98820a27b5521a9c1",
+      "scope": "Fresh final-source checks. RepositoryAdoptionIT overlaps earlier reports; counts are not summed across groups."
+    }
   },
   "limits": [
     "Disposition review is metadata review, not proof of every sentence.",
     "Reviewed atomic claims do not establish verified behavior or full migration.",
     "Prepared agent assignments use a fake launcher, not fresh live model execution.",
-    "Plan obligations remain open; publication does not activate the shared daemon."
-  ]
+    "Shared-runtime activation is verified by ordinary observations; 13 managed requirements remain open and context stays UNVERIFIED/HISTORICAL."
+  ],
+  "sharedRuntime": {
+    "stage": "ACTIVATED_AND_VERIFIED",
+    "activatedAt": "2026-09-25T16:45:59.213482+00:00",
+    "verifiedAt": "2026-09-25T16:47:50.937245+00:00",
+    "sourceCommit": "3e735040b0981162d8e544b5700bde159494b2a4",
+    "jarSha256": "106a6e2a1cdfb7a6be83bec9d167263951287546db46e556c8e1e3dc8d4bd70a",
+    "executionKind": "ORDINARY_SHARED_CLI_HTTP",
+    "documentsAtSnapshot": 155,
+    "claimsAtSnapshot": 81,
+    "preexistingTasksPreserved": 141,
+    "preexistingOpenLaunchesPreserved": 6,
+    "authoredJsonQueryable": true,
+    "ordinaryOmittedAndEmptyFiltersWork": true,
+    "unauthenticatedQueryDenied": 401,
+    "migrationsApplied": [
+      21,
+      22,
+      23
+    ],
+    "corpusReimportInserted": 0,
+    "context": {
+      "snapshot": "9a07cfa3f2423ecaf966e261a1fea40742045efeb3eeb8a659c06b9cffe2b17f",
+      "structuralStatus": "LINKED",
+      "evidenceStatus": "UNVERIFIED",
+      "historicalClaims": 3,
+      "remainingRequirements": [
+        "agent-context-at-work",
+        "change-impact-visible",
+        "documentation-generated-from-knowledge",
+        "documentation-inventory-complete",
+        "durable-intent",
+        "freshness",
+        "knowledge-query-usable",
+        "migration-accounted-for",
+        "plans-preserve-obligations",
+        "repository-adoption-demonstrated",
+        "single-authored-authority",
+        "source-remains-unchanged",
+        "worker-routing-shared-worker-budget"
+      ],
+      "originalIntentRetained": true
+    },
+    "existingThreadMcp": {
+      "structuralStatus": "LINKED",
+      "evidenceStatus": "UNVERIFIED",
+      "originalIntentReturned": true,
+      "rationaleReturned": true,
+      "historicalClaimsReturned": 3,
+      "historicalClaimsTotal": 5,
+      "historicalClaimsTruncated": true,
+      "planBinding": "UNBOUND",
+      "claimApplicability": [
+        "HISTORICAL"
+      ]
+    },
+    "recordHashes": {
+      "activation.json": "7d67a3e8a47ae850c3f31a963e60d84bbb10d6e937b6e822f3c7bcce7488febf",
+      "shared-verification.json": "4ab8b292193f645dff7cf545712392b8e39f4a90d386ae76055fc8d7d33e533c",
+      "shared-mcp-context.json": "6a7e423a98f9d4bce02cff32125e4c400b591714101348c8facf9548391458b4"
+    },
+    "scope": "Authorized shared-runtime activation and ordinary CLI/HTTP/MCP observations. No fresh live Claude model execution or governed release receipt is established."
+  }
 }
