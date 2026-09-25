@@ -1,0 +1,245 @@
+{
+  "schema": "divine-public-adoption/v1",
+  "asOf": "2026-09-25",
+  "status": "ADOPTION_IN_PROGRESS",
+  "javaProjection": {
+    "schema": "local.divine.documentation-agent-view/v1",
+    "sourceSnapshot": "a2f217c19fc1845a9ffb9be6976ea8f32400f92d7a353beb831e54695895a358",
+    "sourceManifestHash": "77e3312b1fac06dd33cccc5d21edf38f50f520a6a5b7df2e3741e74a9df9df45",
+    "planDigest": "ef446b8b3bbd29ed76ee3edff989cf4bba7d626e31f958eb0e2f2c33740ec2c4",
+    "evidenceStatus": "UNVERIFIED",
+    "sha256": "99b9d8cec323f44e85ff015cf308b09e856f76b6dbe71e16033934cb6250a9dd",
+    "inventoryDriftCount": 0
+  },
+  "sharedDaemonActivated": false,
+  "sources": [
+    {
+      "path": "src/main/resources/knowledge/documentation-inventory.json",
+      "sha256": "879c10433b1763d826541e42446d592a552474c9bdc2e97415ac354bcef17edd"
+    },
+    {
+      "path": "plans/semantic-documentation.divine-plan",
+      "sha256": "32bd6253e407901280bc78c27cf909ab4641d0ea265ee602cdae2ab65a3ba1fe"
+    },
+    {
+      "path": "src/main/resources/knowledge/adoption-claims.json",
+      "sha256": "757291a561c4ab95847eb2022563446c433499a14c5177d0d3ee2d60f41e22c9"
+    },
+    {
+      "path": "src/main/resources/knowledge/agent-guidance-claims.json",
+      "sha256": "e58bebd5f0fcbc2c86314ea340bdc4ca619f03db68074d92545c51989a8f3988"
+    },
+    {
+      "path": "src/main/resources/knowledge/documentation-history-claims.json",
+      "sha256": "a0081a42154fb8d676c34373f04d9ecbaf428d2c1801a83139d46b09585bdb26"
+    },
+    {
+      "path": "src/main/resources/knowledge/historical-claims.json",
+      "sha256": "224d3941244e7fd384831ca1d19568d7962712c484738e8267598d7742005476"
+    },
+    {
+      "path": "src/main/resources/knowledge/operating-claims.json",
+      "sha256": "58ca21e7e3750d41d0376eb75861d307093ea95bf4f43005e171b64469bca3d8"
+    },
+    {
+      "path": "src/main/resources/knowledge/operations-history-claims.json",
+      "sha256": "2ec5b45b92d3aaeaaee3fa760c96e4a9f8ab6258c7a9da14282cc7efd5ffe677"
+    },
+    {
+      "path": "src/main/resources/knowledge/resource-guidance-claims.json",
+      "sha256": "eac86556eab7004c8905451b721fcfe4685a9d434072b92562e22236c93ad931"
+    },
+    {
+      "path": "src/main/resources/knowledge/routing-claims.json",
+      "sha256": "4c6f5f1d79d8c73e0f3197d42e507f0b95c55046a43bd1686e4a48b03e204651"
+    }
+  ],
+  "inventory": {
+    "documents": 154,
+    "reviewStates": {
+      "REVIEWED": 154
+    },
+    "dispositions": {
+      "CURRENT": 58,
+      "GENERATED": 39,
+      "HISTORICAL": 55,
+      "REQUIRES_REVIEW": 2
+    },
+    "requiresReview": [
+      "docs/DIVINE-CONTEXT-BACKLOG.md",
+      "plans/semantic-documentation.divine-plan"
+    ]
+  },
+  "claims": {
+    "total": 81,
+    "reviewStates": {
+      "REVIEWED": 81
+    },
+    "manifests": 8
+  },
+  "plan": {
+    "adoptionSteps": [
+      {
+        "id": "adoption-acceptance",
+        "objective": "Prove the actual repository transition and preserve unfinished intent through resume and completion"
+      },
+      {
+        "id": "adoption-agent-workflow",
+        "objective": "Use persisted intent and bounded semantic context in ordinary Claude/Codex assignments"
+      },
+      {
+        "id": "adoption-change-impact",
+        "objective": "Connect real source changes to impacted knowledge and explicit review obligations"
+      },
+      {
+        "id": "adoption-generated-views",
+        "objective": "Generate maintained documentation views from authoritative knowledge and evidence"
+      },
+      {
+        "id": "adoption-inventory",
+        "objective": "Implement a maintained documentation inventory and classify existing project knowledge"
+      },
+      {
+        "id": "adoption-migration",
+        "objective": "Generalize reviewed ingestion and migrate actual documentation with semantic provenance"
+      },
+      {
+        "id": "adoption-query-repair",
+        "objective": "Repair and verify the normal knowledge-query path against PostgreSQL"
+      }
+    ],
+    "completionEstablished": false
+  },
+  "isolatedRuntime": {
+    "executionKind": "ORDINARY_ISOLATED_CLI_HTTP",
+    "snapshot": "ac9104e17a88b2a2cf972b557959bd0941d69484",
+    "sharedDaemonActivated": false,
+    "reviewedClaimsImported": 81,
+    "claimsAtSnapshot": 81,
+    "documentsAtSnapshot": 154,
+    "corpusReimportInserted": 0,
+    "evidenceStatus": "UNVERIFIED",
+    "remainingRequirements": [
+      "agent-context-at-work",
+      "change-impact-visible",
+      "documentation-generated-from-knowledge",
+      "documentation-inventory-complete",
+      "durable-intent",
+      "freshness",
+      "knowledge-query-usable",
+      "migration-accounted-for",
+      "plans-preserve-obligations",
+      "repository-adoption-demonstrated",
+      "single-authored-authority",
+      "source-remains-unchanged",
+      "worker-routing-shared-worker-budget"
+    ],
+    "importEvidenceSha256": "8b3f458f97c8b1c8e0464b8ab9a4ab4da4a188f1498cd106ab826aa537bbddb2",
+    "upgrade": {
+      "stage": "V22-to-V23",
+      "oldRowsExcluded": true,
+      "exactReimportAddsBindingsWithoutNewClaims": true,
+      "evidenceSha256": "39ae5424d93021e33b8c35f4871d1e1ba58932b1b292963e813a14b148a48453"
+    }
+  },
+  "ordinaryTests": {
+    "units": {
+      "tests": 841,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2,
+      "suites": 134,
+      "jarSha256": "2cb07d1ee9a6149acd33506fb8ec6e6d300700c2d148b88ab01af8603663bdca"
+    },
+    "unitEvidenceSha256": "9adcddd1abffd83ad5175df9ee840474a43d61c5dfbff641b21ecc9a0bc7985b",
+    "integrationSuites": [
+      {
+        "suite": "DocumentationMigrationIT",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "f7c6712218e644bd04643396812c03b27cc63ddcd01f11caa1ab48c2c98bf184"
+      },
+      {
+        "suite": "KnowledgePersistenceIT",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "a1116b3dd1d063d90d2335f5d3f71adca82859d573c91c8001f1055ef49c422e"
+      },
+      {
+        "suite": "KnowledgeQueryDefaultsIT",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "0c8bd7635aa5585dcf261f2dc5f4927f9a5a63c9aac912ed740ac152c5a4a242"
+      },
+      {
+        "suite": "LegacySymbolContextIT",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "c7f18ccdd03a64479da6294079151b8dd2d26aa5f26011c4b607aa11d2d77e2d"
+      },
+      {
+        "suite": "RepositoryAdoptionIT",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "9cb1abc4cd228e34dd3f849734a31b74b4fb909f48656d4ea8fd8e1e5adf7398"
+      },
+      {
+        "suite": "RoutingDocumentationAdoptionIT",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "3dd3c4fc1d5a13db31ce7b13efd488c09fda9f185d7b036037d98800442371eb"
+      },
+      {
+        "suite": "SemanticChangeImpactIT",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "7112b529500f53e7807306caa411e733033a9484dad19fe556afb0e1df1d2d49"
+      },
+      {
+        "suite": "SemanticMcpIT",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "bd3ab771cca76c64f5e8ae372615f8f3d5c89b945d4cc5c72a41383d52067e35"
+      },
+      {
+        "suite": "AgentKnowledgeWorkflowIT",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "4c41ab4a070024c6dcb492c9e0624bd2f2aaae0d99885c96a3138f656879f5f7"
+      },
+      {
+        "suite": "IntentCompletionIT",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "950ecdaf981f61cc57b81f31cefee37b320374d2d5ac10e7ae54b2970440c503"
+      }
+    ],
+    "scope": "Latest available report per suite; reports can come from different executions. No combined run total or managed verification receipt is inferred."
+  },
+  "limits": [
+    "Disposition review is metadata review, not proof of every sentence.",
+    "Reviewed atomic claims do not establish verified behavior or full migration.",
+    "Prepared agent assignments use a fake launcher, not fresh live model execution.",
+    "Plan obligations remain open; publication does not activate the shared daemon."
+  ]
+}
