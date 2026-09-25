@@ -4,18 +4,18 @@
   "status": "ADOPTION_IN_PROGRESS",
   "javaProjection": {
     "schema": "local.divine.documentation-agent-view/v1",
-    "sourceSnapshot": "a2f217c19fc1845a9ffb9be6976ea8f32400f92d7a353beb831e54695895a358",
-    "sourceManifestHash": "77e3312b1fac06dd33cccc5d21edf38f50f520a6a5b7df2e3741e74a9df9df45",
+    "sourceSnapshot": "9a07cfa3f2423ecaf966e261a1fea40742045efeb3eeb8a659c06b9cffe2b17f",
+    "sourceManifestHash": "61ba8c595dc31fae61a509226d65af89956999bfe1251730ef0e32daf45164dd",
     "planDigest": "ef446b8b3bbd29ed76ee3edff989cf4bba7d626e31f958eb0e2f2c33740ec2c4",
     "evidenceStatus": "UNVERIFIED",
-    "sha256": "99b9d8cec323f44e85ff015cf308b09e856f76b6dbe71e16033934cb6250a9dd",
+    "sha256": "6951f19817ceec0ebfe659d707edf1d9880866b3eb725f5f7b987256a552ea0a",
     "inventoryDriftCount": 0
   },
   "sharedDaemonActivated": false,
   "sources": [
     {
       "path": "src/main/resources/knowledge/documentation-inventory.json",
-      "sha256": "879c10433b1763d826541e42446d592a552474c9bdc2e97415ac354bcef17edd"
+      "sha256": "3518ba09e38d58ad9e26290741f242671b78a7d89eb2e68bf78a3b28e45c65b0"
     },
     {
       "path": "plans/semantic-documentation.divine-plan",
@@ -55,14 +55,14 @@
     }
   ],
   "inventory": {
-    "documents": 154,
+    "documents": 155,
     "reviewStates": {
-      "REVIEWED": 154
+      "REVIEWED": 155
     },
     "dispositions": {
       "CURRENT": 58,
       "GENERATED": 39,
-      "HISTORICAL": 55,
+      "HISTORICAL": 56,
       "REQUIRES_REVIEW": 2
     },
     "requiresReview": [
@@ -112,12 +112,14 @@
   },
   "isolatedRuntime": {
     "executionKind": "ORDINARY_ISOLATED_CLI_HTTP",
-    "snapshot": "ac9104e17a88b2a2cf972b557959bd0941d69484",
+    "snapshot": "3e735040b0981162d8e544b5700bde159494b2a4",
     "sharedDaemonActivated": false,
     "reviewedClaimsImported": 81,
     "claimsAtSnapshot": 81,
-    "documentsAtSnapshot": 154,
+    "documentsAtSnapshot": 155,
     "corpusReimportInserted": 0,
+    "oldInventoryDigestPreserved": true,
+    "authoredJsonQueryable": true,
     "evidenceStatus": "UNVERIFIED",
     "remainingRequirements": [
       "agent-context-at-work",
@@ -134,7 +136,7 @@
       "source-remains-unchanged",
       "worker-routing-shared-worker-budget"
     ],
-    "importEvidenceSha256": "8b3f458f97c8b1c8e0464b8ab9a4ab4da4a188f1498cd106ab826aa537bbddb2",
+    "importEvidenceSha256": "6b772c8c1c54975fd309d2e6e743ff5f5a3a64ceca2fa1bd1cca10b939b70cfb",
     "upgrade": {
       "stage": "V22-to-V23",
       "oldRowsExcluded": true,
@@ -144,14 +146,15 @@
   },
   "ordinaryTests": {
     "units": {
-      "tests": 841,
+      "tests": 844,
       "failures": 0,
       "errors": 0,
       "skipped": 2,
       "suites": 134,
-      "jarSha256": "2cb07d1ee9a6149acd33506fb8ec6e6d300700c2d148b88ab01af8603663bdca"
+      "jarSha256": "106a6e2a1cdfb7a6be83bec9d167263951287546db46e556c8e1e3dc8d4bd70a",
+      "sourceCommit": "3e735040b0981162d8e544b5700bde159494b2a4"
     },
-    "unitEvidenceSha256": "9adcddd1abffd83ad5175df9ee840474a43d61c5dfbff641b21ecc9a0bc7985b",
+    "unitEvidenceSha256": "72c1205c7b503b4d93968348d6ea4a46e439096fad49df0af3d401f64b9646e3",
     "integrationSuites": [
       {
         "suite": "DocumentationMigrationIT",
@@ -234,7 +237,7 @@
         "reportSha256": "950ecdaf981f61cc57b81f31cefee37b320374d2d5ac10e7ae54b2970440c503"
       }
     ],
-    "scope": "Latest available report per suite; reports can come from different executions. No combined run total or managed verification receipt is inferred."
+    "scope": "Retained integration reports from earlier candidate executions, previously published at website commit 96476d5. These mixed-run reports do not establish a rerun against the latest source. No combined run total or managed verification receipt is inferred."
   },
   "limits": [
     "Disposition review is metadata review, not proof of every sentence.",
