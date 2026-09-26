@@ -1,7 +1,64 @@
 {
   "schema": "divine-public-adoption/v1",
-  "asOf": "2026-09-25",
+  "asOf": "2026-09-26",
   "status": "ADOPTION_IN_PROGRESS",
+  "semanticWorkflowCandidate": {
+    "stage": "STAGED_NOT_ACTIVATED",
+    "source": "parent integration checkout",
+    "sharedRuntimeActivated": false,
+    "features": {
+      "permanentKnowledgeModules": true,
+      "schema3FrozenModuleImports": true,
+      "draftOnlyScaffolding": true,
+      "automaticClaimContext": {
+        "claudePathTested": true,
+        "codexPathTested": true,
+        "boundedSnapshotPinnedParityTested": true,
+        "liveVendorTrial": false
+      },
+      "watcherMcpRefresh": {
+        "realProtocolInitializeReadSubscribeUpdateTested": true,
+        "boundedProjection": true,
+        "executesTestsOrPlanCommands": false
+      },
+      "intellijPlugin": {
+        "compiledSdk": "262",
+        "daemonClientTransport": "HTTP",
+        "daemonClientTested": true,
+        "packagedLspStdioInitializeShutdownExitTested": true,
+        "installedUiVerified": false
+      }
+    },
+    "activationBoundary": "The prior shared build remains active until coordinated activation.",
+    "sourceCommit": "0762b7d2a3d8f4b031fa4c28e779c26e4249bcb6",
+    "jarSha256": "c6940a20c33f30d3182a590492e97e4b2c2cb32ebc4f6e9a7ba1e857a9508ddc",
+    "intellijZipSha256": "14cd1056a1de34d97026289bbe5773edb6d6051547f69813fc394969899bf6d3",
+    "inventoryDocuments": 164,
+    "validation": {
+      "unit": {
+        "tests": 880,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2,
+        "scope": "Full implementation unit run; subsequent focused checks cover final configuration and documentation changes."
+      },
+      "integration": {
+        "tests": 28,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "uniqueClasses": 9,
+        "scope": "Latest passing results across the combined run and a corrected persistence-fixture rerun; not a single green suite run."
+      },
+      "launcher": {
+        "tests": 27,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      "concurrentDocumentationDrift": "A new README section moved a reviewed quota claim. The anchor check failed; its source span was reviewed, corrected and retested."
+    }
+  },
   "javaProjection": {
     "schema": "local.divine.documentation-agent-view/v1",
     "sourceSnapshot": "9a07cfa3f2423ecaf966e261a1fea40742045efeb3eeb8a659c06b9cffe2b17f",
